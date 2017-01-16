@@ -7,19 +7,21 @@
     <script>
     $(document).ready(function(){
     $(".btn").click(function(){
-        $("h1").fadeOut()
+        $("h1").fadeTo("slow", 0)
     });
     $(".btn2").click(function(){
-        $("h1").fadeIn()
+        $("h1").fadeTo("slow", 1)
     });
   });
     </script>
 </head>
 <body>
 <div>
-  <h1>web_intervention</h1>
-  <button class="btn">poof</button>
-  <button class="btn2">come back</button>
+  <h1>web<br/>intervention</h1>
 </div>
+  <div>
+    <button class="btn">poof</button>
+    <button class="btn2">come back</button>
+  </div>
 </body>
 </html>
