@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-image:url(/city.jpg);;
+}
+
+#fire {
+  font-family: Courier;
+  padding: 0.3em;
+  margin: auto;
+  text-align: center;
+  margin-top: 175px;
+}
+
+#win {
+  display: none;
+  font-family: Courier;
+  padding: 0.3em;
+  margin: auto;
+  text-align: center;
+  margin-top: 175px;
+  color: white;
+  font-size: 5em;
+}
+
+#lose {
+  display: none;
+  font-family: Courier;
+  padding: 0.3em;
+  margin: auto;
+  text-align: center;
+  margin-top: 175px;
+  color: white;
+  font-size: 5em;
+}
