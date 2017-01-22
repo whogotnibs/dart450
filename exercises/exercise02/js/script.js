@@ -5,7 +5,7 @@ $(document).ready(function() {
   var opacityIncrease = .03;
   var size = 5;
   var sizeDecrease = .2;
-  var sizeIncrease = .1;
+  var sizeIncrease = .3;
 
   $('body').keypress(function () {
     opacity -= opacityDecrease;
