@@ -1,0 +1,25 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: magenta;
+}
+
+.clear {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  width: 90px;
+  border: outset;
+  background-color: plum;
+  text-align: center;
+  font-family: monospace;
+  color: white;
+  padding: 10px;
+  margin-left: -55px;
+}
+
+.clear:hover {
+  border: inset;
+  background-color: orchid;
+
+}
