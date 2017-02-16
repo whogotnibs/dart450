@@ -13,9 +13,12 @@ Thomas Bell
 
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-  <title>Click the Page</title>
+  <title>Draw On Me</title>
 
   <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+  <!--  Including the responsive voice library-->
+  <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
 
   <!-- Including jQuery by default -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -30,9 +33,12 @@ Thomas Bell
 </head>
 
 <body>
-
+<audio class="music" autoplay="autoplay" loop="loop"><source src="music.mp3"></audio>
+<div class="canvas"></div>
 <div class="clear">~ clear ~</div>
-
+<div class="controls">
+  use the mouse to draw</br>[M] = play/pause music
+</div>
 </body>
 
 </html>
