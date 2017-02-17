@@ -4,7 +4,7 @@ var x;
 var y;
 var music = true;
 var drawing;
-const NUM_BARS = 20;
+const NUM_BARS = 80;
 // Storing the window height in a variable
 var windowHeight;
 
@@ -44,7 +44,8 @@ function draw() {
 
 //make its location at the mouse coordinates
 function mark() {
-  var rect = rectangle(x, y, 10, 10);
+  // +/- 5 the location to adjust for the size of the rectangle
+  var rect = rectangle(x-5, y+5, 10, 10);
   //place it on the page
   $('.canvas').append(rect);
 }
@@ -115,17 +116,14 @@ function voice() {
 function barAnimation() {
   console.log('animate!');
 
-  //get the height of the page
-  windowHeight = $(window).height();
-
   // First we create an array to store the bars
   bars = new Array(NUM_BARS);
 
   // Now we loop through the (empty) array, putting bars in it
   for (var i = 0; i < NUM_BARS; i++) {
 
-    // Make a bar (set its height randomly so they're at different and random places in the window)
-    var br = bar(0, windowHeight/i+100, 100, 2);
+    // Make a bar (we will adjust the height randomly for each bar in the css)
+    var br = bar(0, 0, 100, 3);
 
     // Put it in the array
     bars[i] = br;
@@ -145,8 +143,15 @@ function bar (x, y, w, h) {
   br.w = w;
   br.h = h;
 
-  var color = ['yellowgreen', 'purple', 'lime', 'springgreen', 'yellow', 'darkseagreen'];
+  var color = ['springgreen', 'yellow', 'darkseagreen'];
   var randomColor = color[Math.floor(Math.random() * color.length)];
+
+
+  //get the height of the page
+  windowHeight = $(window).height();
+  //get a random height in the window
+  randomHeight = randomIntegerInRange(0, windowHeight)
+
 
   // Then we set up the CSS of the div so that it looks like a bar
   // in the location we want it.
@@ -156,7 +161,7 @@ function bar (x, y, w, h) {
     position: 'absolute',
     width: br.w + '%',
     height: br.h + 'px', 
-    transform: 'translate(' + br.x + 'px, ' + br.y + 'px)',
+    transform: 'translate(' + br.x + 'px, ' + randomHeight + 'px)',
     backgroundColor: randomColor
   }); 
 
@@ -164,16 +169,17 @@ function bar (x, y, w, h) {
 }
 
 function removeBars() {
-  $('.bar').remove;
+  $('.bar').remove();
 }
 //clearing the page lowers the opacity of what has been drawn to 0
-//then it starts the css animation to fade back in over 1 minute
+//then it starts the css animation to fade back in over time
 function clearPage() {
   $('.rect').css({
     opacity: 0,
+    backgroundColor: 'seablue',
     'animation-name': 'fadein',
-    'animation-duration': '10s',
-    'animation-delay': '3s',
+    'animation-duration': '2s',
+    'animation-delay': '30s',
     'animation-fill-mode': 'forwards'
   });
 }
@@ -181,7 +187,7 @@ function clearPage() {
 function toggleMusic() {
   //just lowering the music volume a bit because it was too loud
   //compared to the voice
-  $('.music').prop('volume', 0.4);
+  $('.music').prop('volume', 0.6);
   var song = document.getElementsByClassName("music")[0];
 
   $(document).keypress(function (event) {
@@ -205,4 +211,8 @@ function toggleMusic() {
       }
     }
   });
+}
+
+function randomIntegerInRange(min,max) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
