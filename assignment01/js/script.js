@@ -2,7 +2,7 @@ const MARKING_SPEED = 10;
 // setting x,y coords as global variables
 var x;
 var y;
-var music = true;
+var music = false;
 var drawing;
 const NUM_BARS = 80;
 // Storing the window height in a variable
@@ -45,7 +45,7 @@ function draw() {
 //make its location at the mouse coordinates
 function mark() {
   // +/- 5 the location to adjust for the size of the rectangle
-  var rect = rectangle(x-5, y+5, 10, 10);
+  var rect = rectangle(x-5, y-5, 10, 10);
   //place it on the page
   $('.canvas').append(rect);
 }
@@ -191,23 +191,22 @@ function toggleMusic() {
   var song = document.getElementsByClassName("music")[0];
 
   $(document).keypress(function (event) {
+    //play music
+    if (music == false) {
+      if (event.which == 109) {
+        // m
+        music = true;
+        song.play();
+        console.log("Music Played");
+      }
+    }
     //pause music
-    if (music == true) {
+    else if (music == true) {
       if (event.which == 109) {
         // m
         music = false;
         song.pause();
         console.log("Music Paused");
-      }
-    }
-
-    //unpause music
-    else if (music == false) {
-      if (event.which == 109) {
-        // m
-        music = true;
-        song.play();
-        console.log("Music UnPaused");
       }
     }
   });
