@@ -97,7 +97,7 @@ function voice() {
     "let's start again",
     "another one",
     "a fresh start",
-    "the blank canvas",
+    "a blank canvas",
     "what will you make now",
     "this one will be a masterpiece"
   ]
@@ -162,7 +162,12 @@ function bar (x, y, w, h) {
     width: br.w + '%',
     height: br.h + 'px', 
     transform: 'translate(' + br.x + 'px, ' + randomHeight + 'px)',
-    backgroundColor: randomColor
+    backgroundColor: randomColor,
+    opacity: 0,
+    'animation-name': 'flash',
+    'animation-duration': '.3s',
+    'animation-delay': '1s',
+    'animation-iteration-count': '2'
   }); 
 
   return br;
@@ -171,16 +176,13 @@ function bar (x, y, w, h) {
 function removeBars() {
   $('.bar').remove();
 }
-//clearing the page lowers the opacity of what has been drawn to 0
-//then it starts the css animation to fade back in over time
+//lowering the opacity of what has been drawn over 5seconds with css a animation
 function clearPage() {
   $('.rect').css({
-    opacity: 0,
-    backgroundColor: 'seablue',
-    'animation-name': 'fadein',
-    'animation-duration': '2s',
-    'animation-delay': '30s',
-    'animation-fill-mode': 'forwards'
+    'animation-name': 'fade',
+    'animation-duration': '5s',
+    'animation-fill-mode': 'forwards',
+    'animation-delay': '1s'
   });
 }
 
