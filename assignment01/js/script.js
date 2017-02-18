@@ -1,12 +1,12 @@
+// the interval for how often a mark is made
 const MARKING_SPEED = 10;
 // setting x,y coords as global variables
 var x;
 var y;
+// site loads with music not playing
 var music = false;
 var drawing;
 const NUM_BARS = 80;
-// Storing the window height in a variable
-var windowHeight;
 
 $(document).ready(function() {
 
@@ -25,6 +25,7 @@ $(document).ready(function() {
   // a button that clears the page and speaks
   $('.clear').click(clickedClear);
 
+  // pause/play music
   toggleMusic();
 
 });
@@ -44,7 +45,7 @@ function draw() {
 
 //make its location at the mouse coordinates
 function mark() {
-  // +/- 5 the location to adjust for the size of the rectangle
+  // - 5px the x and y location to adjust for the size of the rectangle
   var rect = rectangle(x-5, y-5, 10, 10);
   //place it on the page
   $('.canvas').append(rect);
@@ -75,7 +76,7 @@ function rectangle (x, y, w, h) {
   return rect;
 }
 
-//stop the drawing interval
+//if the user releases the mouse, stop the drawing interval if it is running 
 function stopDrawing() {
   if (drawing) {
     clearInterval(drawing);
@@ -84,14 +85,15 @@ function stopDrawing() {
 }
 
 
+//handle the clear button being clicked
 function clickedClear() {
   barAnimation();
   voice();
   clearPage();
 }
 
-//randomly selected comment (from array) spoken by a british man
 function voice() {
+  //an array of possible comments
   var comment = [
     "say goodbye",
     "let's start again",
@@ -102,12 +104,13 @@ function voice() {
     "this one will be a masterpiece"
   ]
 
+  //randomly select a comment using the math library
   var randomComment = comment[Math.floor(Math.random() * comment.length)];
 
   responsiveVoice.speak(
     randomComment,
     "UK English Male",
-    //calling the bar animation for the duration of the spoken comment
+    //stoping the bar animation with 'removeBars' at the end of the comment
     {pitch: .5, rate: .8, onend: removeBars})
 }
 
@@ -143,14 +146,15 @@ function bar (x, y, w, h) {
   br.w = w;
   br.h = h;
 
+  //rondomly selecting 1 of 3 colours
   var color = ['springgreen', 'yellow', 'darkseagreen'];
   var randomColor = color[Math.floor(Math.random() * color.length)];
 
 
   //get the height of the page
-  windowHeight = $(window).height();
+  var windowHeight = $(window).height();
   //get a random height in the window
-  randomHeight = randomIntegerInRange(0, windowHeight)
+  var randomHeight = randomIntegerInRange(0, windowHeight)
 
 
   // Then we set up the CSS of the div so that it looks like a bar
@@ -161,9 +165,11 @@ function bar (x, y, w, h) {
     position: 'absolute',
     width: br.w + '%',
     height: br.h + 'px', 
+    //the height of the bar is randomly selected within the height of the window
     transform: 'translate(' + br.x + 'px, ' + randomHeight + 'px)',
     backgroundColor: randomColor,
     opacity: 0,
+    //animating the bars to 'flash' using css animation
     'animation-name': 'flash',
     'animation-duration': '.3s',
     'animation-delay': '1s',
@@ -174,9 +180,10 @@ function bar (x, y, w, h) {
 }
 
 function removeBars() {
+  //remove the bars
   $('.bar').remove();
 }
-//lowering the opacity of what has been drawn over 5seconds with css a animation
+//lowering the opacity of what has been drawn over 5seconds with a css animation
 function clearPage() {
   $('.rect').css({
     'animation-name': 'fade',
@@ -187,11 +194,12 @@ function clearPage() {
 }
 
 function toggleMusic() {
-  //just lowering the music volume a bit because it was too loud
-  //compared to the voice
+  //lowering the music volume a bit because it was too loud
+  //compared to the responsiveVoice comments
   $('.music').prop('volume', 0.6);
   var song = document.getElementsByClassName("music")[0];
 
+  //press m to play/pause the music
   $(document).keypress(function (event) {
     //play music
     if (music == false) {

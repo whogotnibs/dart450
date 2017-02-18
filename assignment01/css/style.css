@@ -32,11 +32,13 @@ body, html {
   background-color: orchid;
 }
 
+/*animating the drawing to fade from .5 to .05 opacity*/
 @keyframes fade {
     from {opacity: .5;}
     to {opacity: .05;}
 }
 
+/*animating the bars to flash and then quickly fade to 0 opacity*/
 @keyframes flash {
   from {opacity: 1;}
   to {opacity: 0}
@@ -52,6 +54,8 @@ body, html {
   margin-bottom: 5px;
   font-family: monospace;
   color: plum;
+  -webkit-user-select: none;
+
 }
 
 .rect {
