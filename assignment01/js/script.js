@@ -8,6 +8,9 @@ var music = false;
 var drawing;
 const NUM_BARS = 80;
 
+var selectedColorScheme;
+var colorScheme;
+
 $(document).ready(function() {
 
   // determine the vert and horizontal position of the mouse
@@ -27,6 +30,9 @@ $(document).ready(function() {
 
   // pause/play music
   toggleMusic();
+
+  // this function selects the colour scheme
+  toggleColorScheme();
 
 });
 
@@ -70,13 +76,14 @@ function rectangle (x, y, w, h) {
     width: rect.w + 'px',
     height: rect.h + 'px', 
     transform: 'translate(' + rect.x + 'px, ' + rect.y + 'px)',
-    backgroundColor: 'springgreen'
+    // make new rectangles follow the selected colour scheme
+    backgroundColor: colorScheme [selectedColorScheme][1]
   }); 
 
   return rect;
 }
 
-//if the user releases the mouse, stop the drawing interval if it is running 
+//if the user releases the mouse, stop the drawing interval if it is running
 function stopDrawing() {
   if (drawing) {
     clearInterval(drawing);
@@ -220,6 +227,73 @@ function toggleMusic() {
       }
     }
   });
+}
+
+function toggleColorScheme() {
+  //organizing the possible colour schemes into arrays
+  //experamenting with the html colour names rather than decimals or hex
+  colorScheme = [
+    ['darkturquoise', 'papayawhip', 'crimson', 'firebrick'],
+    ['magenta', 'lime', 'lime', 'limegreen'],
+    ['blue', 'red', 'gold', 'goldenrod'],
+    ['white', 'aqua', 'goldenrod', 'darkgoldenrod']
+  ]
+
+  //setting the css for the initial colour scheme
+  if (selectedColorScheme == undefined){
+    //set to scheme 0
+    selectedColorScheme = 0;
+
+    //css styling for the given scheme (scheme 0 in this case)
+    setColorSchemeCSS ();
+  }
+
+  //when the 'c' key is pressed cycle to the next colour scheme
+  $(document).keypress(function (event){
+    //keypress code for 'c'
+    if (event.which == 99) {
+
+      //go to the next scheme
+      selectedColorScheme = (selectedColorScheme + 1);
+
+      //only 4 schemes so go back to 0 if u get to 4
+      if (selectedColorScheme >= 4) {
+        selectedColorScheme = 0;
+      }
+
+      //css style for the given scheme
+      setColorSchemeCSS ();
+    }
+  });
+}
+
+//using nested arrays to style the page based on the selected scheme
+function setColorSchemeCSS () {
+  $(document.body).css({
+    backgroundColor: colorScheme [selectedColorScheme][0]
+  });
+  $('.clear').css({
+    backgroundColor: colorScheme [selectedColorScheme][2],
+    color: colorScheme [selectedColorScheme][0]
+  });
+  $('.controls').css({
+    color: colorScheme [selectedColorScheme][2]
+  });
+
+  //using mouseover and mouseout in javascript instead of css hover
+  $('.clear').mouseover(function() {
+    $(this).css({
+      backgroundColor: colorScheme [selectedColorScheme][3]
+    });
+  });
+  $('.clear').mouseout(function() {
+    $(this).css({
+      backgroundColor: colorScheme [selectedColorScheme][2]
+    });
+  });
+
+  //tell the console what scheme it is now set to
+  console.log('scheme: ' + selectedColorScheme);
 }
 
 function randomIntegerInRange(min,max) {
