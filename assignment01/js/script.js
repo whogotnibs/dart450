@@ -1,3 +1,8 @@
+
+// Drawing Pad
+// Thomas Bell
+
+
 // the interval for how often a mark is made
 const MARKING_SPEED = 10;
 // setting x,y coords as global variables
@@ -233,8 +238,8 @@ function toggleColorScheme() {
   //organizing the possible colour schemes into arrays
   //experamenting with the html colour names rather than decimals or hex
   colorScheme = [
-    ['darkturquoise', 'papayawhip', 'crimson', 'firebrick'],
     ['magenta', 'lime', 'lime', 'limegreen'],
+    ['darkturquoise', 'papayawhip', 'crimson', 'firebrick'],
     ['blue', 'red', 'gold', 'goldenrod'],
     ['white', 'aqua', 'goldenrod', 'darkgoldenrod']
   ]
