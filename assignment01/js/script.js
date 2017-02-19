@@ -1,20 +1,30 @@
+/*
 
-// Drawing Pad
-// Thomas Bell
+Clear Canvas
+Thomas Bell
 
+An easy-to-use web-based drawing interface. 
+Experiment with the possibilies and create something that you think is cool
+
+*/
 
 // the interval for how often a mark is made
 const MARKING_SPEED = 10;
-// setting x,y coords as global variables
-var x;
-var y;
+//total number of bars in the 'flash'
+const NUM_BARS = 80;
+//total number of colour schemes to cycle through
+const TOTAL_COLOR_SCHEMES = 4;
+
 // site loads with music not playing
 var music = false;
-var drawing;
-const NUM_BARS = 80;
 
+//these variables gets set and called with different functions
+//so we use global variables
 var selectedColorScheme;
 var colorScheme;
+var drawing;
+var x;
+var y;
 
 $(document).ready(function() {
 
@@ -262,7 +272,7 @@ function toggleColorScheme() {
       selectedColorScheme = (selectedColorScheme + 1);
 
       //only 4 schemes so go back to 0 if u get to 4
-      if (selectedColorScheme >= 4) {
+      if (selectedColorScheme >= TOTAL_COLOR_SCHEMES) {
         selectedColorScheme = 0;
       }
 
@@ -285,7 +295,7 @@ function setColorSchemeCSS () {
     color: colorScheme [selectedColorScheme][2]
   });
 
-  //using mouseover and mouseout in javascript instead of css hover
+  //styling with mouseover and mouseout in javascript instead of css hover
   $('.clear').mouseover(function() {
     $(this).css({
       backgroundColor: colorScheme [selectedColorScheme][3]
