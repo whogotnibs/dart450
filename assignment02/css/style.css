@@ -1,0 +1,13 @@
+/*
+
+3d Maze
+Thomas Bell
+
+*/
+
+body, html {
+  margin: 0;
+  padding: 0;
+  cursor: crosshair;
+  background-color: black;
+}
