@@ -8,6 +8,14 @@ Thomas Bell
 body, html {
   margin: 0;
   padding: 0;
-  cursor: crosshair;
   background-color: black;
+}
+
+.compass {
+  height: 300px;
+  width: 300px;
+  position: fixed;
+  bottom: -190px;
+  left: 50%;
+  margin-left: -150px;
 }
