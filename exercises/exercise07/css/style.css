@@ -1,0 +1,34 @@
+/* allow sufficient scrolling */
+body {
+  margin-bottom: 90000px;
+}
+
+.box {
+  height: 200px;
+  width: 200px;
+  font-family: monospace;;
+  font-size: 150px;
+  text-align: center;
+  top: 50%;
+  position: fixed;
+  margin-top: -100px;
+  color: white;
+}
+
+/* this box shows the user what colour to aim for */
+#fixedbox {
+  left: 25%;
+  background-color: rgb(255,218,128);
+}
+
+/* only the blue value ever gets adjusted. starting at 255 */
+#changingbox {
+  background-color: rgb(255,218,255);
+  right: 25%;
+}
+
+p {
+  visibility: hidden;
+  margin: 0;
+  transform: rotate(90deg);
+}
