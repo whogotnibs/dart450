@@ -3,7 +3,7 @@
 Clear Canvas
 Thomas Bell
 
-An easy-to-use web-based drawing interface. 
+An easy-to-use web-based drawing interface.
 Experiment with the possibilies and create something that you think is cool
 
 */
