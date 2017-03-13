@@ -163,36 +163,24 @@ function animate() {
     left: (windowWidth/2)-(canvasWidth/2),
   })
 
-  //set the canvas as the drawing stage
-  stage = new createjs.Stage("canvas");
+  $(document).keydown(function (event){
 
-  //lines A - E will be used to animate the room while spinning
-  lineA = new createjs.Shape();
-  lineB = new createjs.Shape();
-  lineC = new createjs.Shape();
-  lineD = new createjs.Shape();
-  lineE = new createjs.Shape();
-
-  //dont allow the room to animate if the player is already spinning
-  if (n != 0) {}
-  else {
-    $(document).keydown(function (event){
-
-      //if the right arrowkey is pressed, animate the scene accordingly
-      if (event.which == 39) {
-        //clear the animating interval...
-        clearInterval(animating);
-        //and then start animating the room clockwise
-        //the argument on 'animateSpin' dictates the direction (0=clockwise, 1=cc)
-        animating = setInterval(function(){animateSpin(0)}, 100);
-      }
-      //do the same for the left arrowkey
-      else if (event.which == 37) {
-        clearInterval(animating);
-        animating = setInterval(function(){animateSpin(1)}, 100);
-      }
-    });
-  }
+    //dont allow the room to animate if the player is already spinning
+    if (n != 0) {}
+    //if the right arrowkey is pressed, animate the scene accordingly
+    else if (event.which == 39) {
+      //clear the animating interval...
+      clearInterval(animating);
+      //and then start animating the room clockwise
+      //the argument on 'animateSpin' dictates the direction (0=clockwise, 1=cc)
+      animating = setInterval(function(){animateSpin(0)}, 100);
+    }
+    //do the same for the left arrowkey
+    else if (event.which == 37) {
+      clearInterval(animating);
+      animating = setInterval(function(){animateSpin(1)}, 100);
+    }
+  });
 
 }
 
@@ -225,19 +213,19 @@ function animateSpin (d) {
   }
 
 
+  //set the canvas as the drawing stage
+  stage = new createjs.Stage("canvas");
+
   //animate each of the lines that make up the spinning room
-  var l;
-  animateRoomLines (ax, ay, bx, by, 0);
-  animateRoomLines (ax, ay, bx, by, 1);
-  animateRoomLines (ax, ay, bx, by, 2);
-  animateRoomLines (ax, ay, bx, by, 3);
-  animateRoomLines (ax, ay, bx, by, 4);
+  for (var l = 0; l < 5; l++) {
+    animateRoomLines (ax, ay, bx, by, l);
+  }
 }
 
-//a function that erases then redraws each of the room's lines
+//a function that redraws each of the room's lines
 //in a new position based on the movement of keypoints A and B
 function animateRoomLines (ax, ay, bx, by, l) {
-  //an array storing the stats of each line
+  //an array storing the stats of each line (A-E) used in the animation
   //each line is then animated with eiseljs based on the array
   var line = [
     [lineA, ax, ay, bx, by],
@@ -247,21 +235,19 @@ function animateRoomLines (ax, ay, bx, by, l) {
     [lineE, canvasWidth, canvasHeight, bx, by]
   ];
 
-  
-  //clear existing lines and set the line style
-  line[l][0].graphics.clear();
+  //create a new shape
+  line[l][0] = new createjs.Shape();
+
+  //set the line style
   line[l][0].graphics.setStrokeStyle(3);
   line[l][0].graphics.beginStroke('black');
 
   //draw a line using the info from the array
-  //(if the player is spinning)
-  if (n > 0) {
-    //set the starting point of the line...
-    line[l][0].graphics.moveTo(line[l][1], line[l][2]);
-    //and where to draw to
-    line[l][0].graphics.lineTo(line[l][3], line[l][4]);
-    line[l][0].graphics.endStroke();
-  }
+  //set the starting point of the line...
+  line[l][0].graphics.moveTo(line[l][1], line[l][2]);
+  //and where to draw to
+  line[l][0].graphics.lineTo(line[l][3], line[l][4]);
+  line[l][0].graphics.endStroke();
 
   //add and update the new lines
   stage.addChild(line[l][0]);
