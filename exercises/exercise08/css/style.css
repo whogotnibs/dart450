@@ -11,8 +11,9 @@ body {
   left: 50%;
   margin-left: -100px;
   position: absolute;
-  color: black;
+  color: #111;
   -webkit-text-stroke: 10px black;
+  user-select: none;
 }
 
 .blast {
