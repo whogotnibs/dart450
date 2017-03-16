@@ -13,16 +13,18 @@ body, html {
   height: 100%;
 }
 
-.compass {
+#compass {
   height: 300px;
   width: 300px;
   position: fixed;
   bottom: -190px;
   left: 50%;
   margin-left: -150px;
+  z-index: 0;
 }
 
 #canvas {
   background-color: papayawhip;
   position: absolute;
+  z-index: 1;
 }

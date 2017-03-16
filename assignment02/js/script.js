@@ -15,13 +15,17 @@ const SPIN_DEG = 1;
 //over this many milliseconds
 const SPIN_INT = 15;
 
+//updating the animation this often
+const ANI_INT = 100;
+
 //a counter variable that will stop spinning after 90deg
 var n = 0;
+
+var d;
 
 //making a global variable for the spinning and animating intervals
 //this way they can be cleared with clearInterval()
 var spinning;
-var animating;
 
 //a place to store the window and canvas width/height
 var windowWidth;
@@ -29,19 +33,32 @@ var windowHeight;
 var canvasWidth;
 var canvasHeight;
 
-//a place to store the eiseljs canvas and lines for animating
+//a place to store the eiseljs drawing stage and lines for animating
 var stage;
 var lineA;
 var lineB;
 var lineC;
 var lineD;
 var lineE;
+var lineF;
+var lineG;
+var lineH;
+
+//and the keypoints used to draw them
+var ax;
+var ay;
+var bx;
+var by;
+var cx;
+var cy;
+var dx;
+var dy;
 
 $(document).ready(function() {
 
-spin ();
-
 animate ();
+
+spin ();
 
 });
 
@@ -54,22 +71,32 @@ function spin () {
     if (n != 0) {}
 
     //if the right arrow key is pressed down spin clockwise
+    //
     else if (event.which == 39) {
-      spinning = setInterval(spinClockwise, SPIN_INT);
+      d = 0;
+      spinning = setInterval(rotate, SPIN_INT);
     }
 
     //if the left arrow key is pressed down spin counter clockwise
     else if (event.which == 37) {
-      spinning = setInterval(spinCounterClockwise, SPIN_INT);
+      d = 1;
+      spinning = setInterval(rotate, SPIN_INT);
     }
   });
-  return n;
 }
 
-function spinClockwise () {
+function rotate () {
+  //clockwise
+  if (d == 0) {
+    //add to the current orientation...
+    orientation = orientation + SPIN_DEG;
+  }
+  //counter clockwise
+  else {
+    //subtract from the current orientation...
+    orientation = orientation - SPIN_DEG;
+  }
 
-  //add to the current orientation...
-  orientation = orientation + SPIN_DEG;
   //and add that same difference to the counter
   n = n + SPIN_DEG;
 
@@ -89,36 +116,6 @@ function spinClockwise () {
     clearInterval(spinning);
     //then reset the counter...
     n = 0;
-    //and log the orientation that the player is now facing
-    // console.log(orientation + 'done spin');
-  }
-}
-
-function spinCounterClockwise () {
-
-  //subtract from the current orientation...
-  orientation = orientation - SPIN_DEG;
-  //and subtract that same difference from the counter
-  n = n + SPIN_DEG;
-
-  //loop the orientation at 360deg as it approaches 0 or 360
-  checkLoop ();
-
-  //rotate the compass based on the current orientation
-  compass ();
-
-  //log the new orientation
-  // console.log(orientation);
-
-  //stop spinning when the counter reaches -90 (N, E, S, or W)
-  if (n >= 90 / SPIN_DEG) {
-
-    //clear the spinning interval...
-    clearInterval(spinning);
-    //then reset the counter...
-    n = 0;
-    //and log the orientation that the player is now facing
-    // console.log(orientation + 'done spin');
   }
 }
 
@@ -141,7 +138,7 @@ function checkLoop () {
 
 //a function that rotates the compass based on the orientation
 function compass () {
-  $('.compass').css({
+  $('#compass').css({
 
     //the compass needs to rotate the opposite direction
     //than the player is spinning
@@ -163,76 +160,88 @@ function animate() {
     left: (windowWidth/2)-(canvasWidth/2),
   })
 
-  $(document).keydown(function (event){
-
-    //dont allow the room to animate if the player is already spinning
-    if (n != 0) {}
-    //if the right arrowkey is pressed, animate the scene accordingly
-    else if (event.which == 39) {
-      //clear the animating interval...
-      clearInterval(animating);
-      //and then start animating the room clockwise
-      //the argument on 'animateSpin' dictates the direction (0=clockwise, 1=cc)
-      animating = setInterval(function(){animateSpin(0)}, 100);
-    }
-    //do the same for the left arrowkey
-    else if (event.which == 37) {
-      clearInterval(animating);
-      animating = setInterval(function(){animateSpin(1)}, 100);
-    }
-  });
-
+  setInterval(animateSpin, ANI_INT);
 }
 
 //a function moving keypoints accross the screen
 //and calling line animations as the player spins
-function animateSpin (d) {
+function animateSpin () {
   //these equations move points A(x,y) and B(x,y) accross the screen
-  //based on n (the spin counter) and d (the direction of spin)
+  //based on n (the spin counter), d (the direction of spin), and the scale
 
-  //moving the x values accross the screen R to L if clockwise...
-  if (d == 0) {
-    var ax = (1-(n/90))*canvasWidth;
-    var bx = (1-(n/90))*canvasWidth;
+  //this constant is used to scale the wall relative to the size of the canvas
+  const SCALE = 0.9;
+
+  //move the keypoints if spinning clockwise
+  if (d != 1) {
+
+    //for the first half of the turn (0-45deg)...
+    if (n < 45) {
+      ax = bx = (canvasWidth*(1-SCALE))-(canvasWidth*(1-SCALE)*(n/45));
+      cx = dx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(1-(n/90)));
+      ay = canvasHeight*(1-SCALE)*(1-(n/45));
+      by = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));
+      cy = canvasHeight*(1-SCALE)+(canvasHeight*(1-SCALE)*(n/45));
+      dy = canvasHeight*SCALE-(canvasHeight*(1-SCALE)*(n/45));
+    }
+    //and for the second half of the turn (45-90deg)
+    else if (n >= 45) {
+      ax = bx = canvasWidth-(canvasWidth*(1-SCALE)*((n-45)/45));
+      cx = dx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(1-(n/90)));
+      ay = canvasHeight*(1-SCALE)*((n-45)/45);
+      by = canvasHeight-(canvasHeight*(1-SCALE)*((n-45)/45));
+      cy = canvasHeight*(1-SCALE)+(canvasHeight*(2*(1-SCALE))*(1-(n/90)));
+      dy = canvasHeight*SCALE-(canvasHeight*(2*(1-SCALE))*(1-(n/90)));
+    }
   }
-  //and L to R if counter clockwise
+
+  //move keypoints if spinning counter clockwise
   else {
-    var ax = canvasWidth-((1-(n/90))*canvasWidth);
-    var bx = canvasWidth-((1-(n/90))*canvasWidth);
-  }
 
-  //move the y values closer together for the first half of the turn (0-45deg)...
-  if (n < 45) {
-    var ay = ((n/90)*canvasHeight*0.2);
-    var by = canvasHeight-((n/90)*canvasHeight*0.2);
+    //for the first half of the turn (0-45deg)...
+    if (n < 45) {
+      ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));
+      cx = dx = (canvasWidth*(1-SCALE))-(canvasWidth*(1-SCALE)*(1-(n/45)))+(canvasWidth*(SCALE));
+      ay = canvasHeight*(1-SCALE)+(canvasHeight*(1-SCALE)*(n/45));
+      by = canvasHeight*SCALE-(canvasHeight*(1-SCALE)*(n/45));
+      cy = canvasHeight*(1-SCALE)*(1-(n/45));
+      dy = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));
+    }
+    //and for the second half of the turn (45-90deg)
+    else if (n >= 45) {
+      ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));
+      cx = dx = (canvasWidth*(1-SCALE)*((n-45)/45));
+      ay = canvasHeight*(1-SCALE)+(canvasHeight*(2*(1-SCALE))*(1-(n/90)));
+      by = canvasHeight*SCALE-(canvasHeight*(2*(1-SCALE))*(1-(n/90)));
+      cy = canvasHeight*(1-SCALE)*((n-45)/45);
+      dy = canvasHeight-(canvasHeight*(1-SCALE)*((n-45)/45));
+    }
   }
-  //and further apart for the second half of the turn (45-90deg)
-  else if (n >= 45) {
-    var ay = ((1-(n/90))*canvasHeight*0.2);
-    var by = canvasHeight-((1-(n/90))*canvasHeight*0.2);
-  }
-
 
   //set the canvas as the drawing stage
   stage = new createjs.Stage("canvas");
 
   //animate each of the lines that make up the spinning room
-  for (var l = 0; l < 5; l++) {
-    animateRoomLines (ax, ay, bx, by, l);
+  for (var l = 0; l < 8; l++) {
+    animateRoomLines (l);
   }
 }
 
 //a function that redraws each of the room's lines
 //in a new position based on the movement of keypoints A and B
-function animateRoomLines (ax, ay, bx, by, l) {
+function animateRoomLines (l) {
   //an array storing the stats of each line (A-E) used in the animation
   //each line is then animated with eiseljs based on the array
   var line = [
-    [lineA, ax, ay, bx, by],
-    [lineB, 0, 0, ax, ay],
-    [lineC, canvasWidth, 0, ax, ay],
-    [lineD, 0, canvasHeight, bx, by],
-    [lineE, canvasWidth, canvasHeight, bx, by]
+    //[name, startX, startY, first45-endX, first45-endY, last45-endX, last45-endY]
+    [lineA, ax, ay, bx, by, bx, by],
+    [lineB, cx, cy, dx, dy, dx, dy],
+    [lineC, ax, ay, cx, cy, cx, cy],
+    [lineD, bx, by, dx, dy, dx, dy],
+    [lineE, 0, 0, ax, ay, cx, cy],
+    [lineF, canvasWidth, 0, cx, cy, ax, ay],
+    [lineG, 0, canvasHeight, bx, by, dx, dy],
+    [lineH, canvasWidth, canvasHeight, dx, dy, bx, by]
   ];
 
   //create a new shape
@@ -246,11 +255,18 @@ function animateRoomLines (ax, ay, bx, by, l) {
   //set the starting point of the line...
   line[l][0].graphics.moveTo(line[l][1], line[l][2]);
   //and where to draw to
-  line[l][0].graphics.lineTo(line[l][3], line[l][4]);
+  //during the first 45deg..
+  if (n < 45) {
+    line[l][0].graphics.lineTo(line[l][3], line[l][4]);
+  }
+  //and the last 45deg
+  else {
+    line[l][0].graphics.lineTo(line[l][5], line[l][6]);
+  }
+
   line[l][0].graphics.endStroke();
 
-  //add and update the new lines
+  //add the new lines and update the drawing stage
   stage.addChild(line[l][0]);
   stage.update();
-
 }
