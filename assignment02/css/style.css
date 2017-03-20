@@ -24,7 +24,7 @@ body, html {
 }
 
 #canvas {
-  background-color: papayawhip;
+  background-color: white;
   position: absolute;
   z-index: 1;
 }
