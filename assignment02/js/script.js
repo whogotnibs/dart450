@@ -7,12 +7,13 @@ Spin around with the arrow keys(for now)
 
 */
 
-//organize the rooms
+//organizing the rooms
 var room = [
-  [null, 3, 1, 2, 'white'],
-  [null, null, null, null, 'pink'],
-  [null, null, null, null, 'lightblue'],
-  [null, null, null, null, 'lavender'],
+  //[room connected to north wall, "..."east, "..."south, "..."west, room colour]
+  /*0*/[null, 1, 2, 3, 'pink'],
+  /*1*/[null, null, null, 0, 'brown'],
+  /*2*/[0, null, null, null, 'lavender'],
+  /*3*/[null, 0, null, null, 'beige'],
 ];
 
 //start in the 0th room
@@ -23,10 +24,10 @@ var r = 0;
 var hole = false;
 var holeIn = false;
 
-//variables that show what rooms the player can see through holes (if any)
-//none can be seen to start
-var f = null;
-var secondf = null;
+//variables that show what walls the player can see
+//(two vars because sometimes while spining 2 holes can be seen)
+var f = 0;
+var secondf;
 
 //start the game facing north
 var orientation = 0;
@@ -36,18 +37,25 @@ const SPIN_DEG = 1;
 //over this many milliseconds
 const SPIN_INT = 15;
 
+//updating the forward movement through a hole this often
+const MOVE_INT = 5;
+
 //updating the animation this often
 const ANI_INT = 100;
 
 //a counter variable that will stop spinning after 90deg
 var n = 0;
 
+//a counter variable that will stop when the player has moved through a hole
+var m = 0;
+
 //a variable for the direction of spinning
 var d;
 
-//making a global variable for the spinning and animating intervals
+//making a global variable for the 'spinning' and 'moving' intervals
 //this way they can be cleared with clearInterval()
 var spinning;
+var moving;
 
 //a place to store the window and canvas width/height
 var windowWidth;
@@ -87,11 +95,18 @@ var secondhy;
 var secondhw;
 var secondhh;
 
+//the height and width of the holes when not spinning (facing a wall)
+const HOLE_SIZE = 150;
+//how much the holes change in size during a spin to simulate perspective
+const HOLE_GROWTH = 75;
+
 $(document).ready(function() {
 
 animate ();
 
 spin ();
+
+move ();
 
 });
 
@@ -101,7 +116,7 @@ function spin () {
   $(document).keydown(function (event){
 
     //dont allow the user to start a new spinning interval if they are
-    //already spinning
+    //already spinning or moving
     if (n != 0) {}
 
     //if the right arrow key is pressed down spin clockwise
@@ -152,6 +167,9 @@ function rotate () {
 
   //check for a hole entering/exiting the scene
   checkHole ();
+
+  //check what rooms(s) the player can see through holes
+  checkFacing ();
 
 }
 
@@ -219,9 +237,6 @@ function checkHole () {
   else {
     hole = false;
   }
-
-  //check what rooms(s) the player can see through holes
-  checkFacing ();
 }
 
 //a function that rotates the compass based on the orientation
@@ -316,6 +331,16 @@ function animateSpin () {
 
   //animate any holes
   animateHoles ();
+
+  //animate moving through a hole
+  if (m != 0) {
+    animateMove ();
+  }
+
+  //set the room to its colour
+  $('#canvas').css({
+    'background-color': room[r][4]
+  })
 }
 
 //a function that redraws each of the room's lines
@@ -363,10 +388,6 @@ function animateRoomLines (l) {
 
 //a function that adjusts key values and calls the holes to animate based on the values
 function animateHoles () {
-  //the height and width of the holes when not spinning (facing a wall)
-  const HOLE_SIZE = 150;
-  //how much the holes change in size during a spin to simulate perspective
-  const HOLE_GROWTH = 75;
 
   //dont draw a hole if there are none
   if (hole == false) {
@@ -414,13 +435,14 @@ function animateHoles () {
   //animate holes leaving the scene (aswell as if not spinning)
   animateHoleOut ();
 
+
   //animate holes entering the scene
   if (holeIn == true) {
     animateHoleIn ();
   }
 }
 
-//a function that draws a new ellipse with createjs every animation update
+//a function that draws a new ellipse with easeljs every animation update
 //using key values for a hole leaving the scene (aswell as non-moving holes)
 function animateHoleOut () {
 
@@ -433,7 +455,10 @@ function animateHoleOut () {
 
   //draw an ellipse using the key values for its location and size
   //colour it based on the next room through the hole
-  hole.graphics.beginFill('papayawhip').drawEllipse(hx, hy, hw, hh);
+  if (room[r][f] != null) {
+    hole.graphics.beginFill(room[room[r][f]][4]).drawEllipse(hx, hy, hw, hh);
+  }
+
 
   hole.graphics.endStroke();
 
@@ -442,7 +467,7 @@ function animateHoleOut () {
   stage.update();
 }
 
-//a function that draws a new ellipse with createjs every animation update
+//a function that draws a new ellipse with easeljs every animation update
 //using key values for a hole entering the scene
 function animateHoleIn () {
 
@@ -455,7 +480,7 @@ function animateHoleIn () {
 
   //draw an ellipse using the key values for its location and size
   //colour it based on the next room through the hole
-  secondHole.graphics.beginFill('papayawhip').drawEllipse(secondhx, secondhy, secondhw, secondhh);
+  secondHole.graphics.beginFill(room[room[r][secondf]][4]).drawEllipse(secondhx, secondhy, secondhw, secondhh);
 
   secondHole.graphics.endStroke();
 
@@ -464,6 +489,108 @@ function animateHoleIn () {
   stage.update();
 }
 
+//a function that records the direction of each wall
+//that the player can see during a spin (or while still)
 function checkFacing () {
 
+  //N>E (c)
+  if (d == 0 && orientation > 0 && orientation < 90){
+    f = 0;
+    secondf = 1;
+  }
+
+  //E>S (c)
+  else if (d == 0 && orientation > 90 && orientation < 180){
+    f = 1;
+    secondf = 2;
+  }
+
+  //S>W (c)
+  else if (d == 0 && orientation > 180 && orientation < 270){
+    f = 2;
+    secondf = 3;
+  }
+
+  //W>N (c)
+  else if (d == 0 && orientation > 270){
+    f = 3;
+    secondf = 0;
+  }
+
+  //N>W (cc) and N
+  else if ((d == 1 && orientation > 270)||(orientation == 0)){
+    f = 0;
+    secondf = 3;
+  }
+
+  //W>S (cc) and W
+  else if ((d == 1 && orientation > 180 && orientation < 270)||(orientation == 270)){
+    f = 3;
+    secondf = 2;
+  }
+
+  //S>E (cc) and S
+  else if ((d == 1 && orientation > 90 && orientation < 180)||(orientation == 180)){
+    f = 2;
+    secondf = 1;
+  }
+
+  //E>N (cc) and E
+  else if ((d == 1 && orientation > 0 && orientation < 90)||(orientation == 90)){
+    f = 1;
+    secondf = 0;
+  }
+}
+
+function move () {
+  $(document).keypress(function (event){
+
+    //dont allow the user to move through a hole if they are spinning or moving
+    if (n != 0 || m != 0) {}
+
+    //if the spacebar is pressed and if there is a hole, move through the hole
+    else if (event.which == 32 && room[r][f] != null) {
+      moving = setInterval(forward, MOVE_INT);
+    }
+  });
+}
+
+function forward () {
+  //advance the counter
+  m = m + 1;
+  //stop at 100
+  if (m >= 100) {
+    //update the room
+    r = room[r][f];
+    //clear the moving interval...
+    clearInterval(moving);
+    //then reset the counter...
+    m = 0;
+  }
+  console.log(m, r);
+}
+
+function animateMove () {
+  var grow = (HOLE_SIZE/2)+canvasWidth/2*(m/100);
+
+  //hide the lines in the room to simplify the moving animation
+  stage.removeAllChildren();
+
+  //create a new shape
+  hole = new createjs.Shape();
+
+  //set the stroke style
+  hole.graphics.setStrokeStyle(3);
+  hole.graphics.beginStroke('black');
+
+  //draw a circle using the key values to expand it as the player moves forwards
+  hole.graphics.beginFill(room[room[r][f]][4]).drawCircle(0, 0, grow);
+  hole.x = canvasWidth/2;
+  hole.y = canvasHeight/2;
+
+  hole.graphics.endStroke();
+
+  //add the new hole and update the drawing stage
+  stage.addChild(hole);
+  stage.update();
 }

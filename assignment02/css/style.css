@@ -24,7 +24,6 @@ body, html {
 }
 
 #canvas {
-  background-color: white;
   position: absolute;
   z-index: 1;
 }
