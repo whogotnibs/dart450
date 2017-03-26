@@ -14,16 +14,38 @@ body, html {
 }
 
 #compass {
-  height: 300px;
-  width: 300px;
+  height: 500px;
+  width: 500px;
   position: fixed;
-  bottom: -190px;
+  bottom: -380px;
   left: 50%;
-  margin-left: -150px;
+  margin-left: -250px;
   z-index: 0;
 }
 
 #canvas {
   position: absolute;
   z-index: 1;
+}
+
+h1 {
+  color: white;
+  margin-left: 50%px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: lighter;
+  letter-spacing: 5px;
+  padding-top: 5px;
+}
+
+h2 {
+  color: white;
+  margin-left: 50%px;
+  margin-bottom: 100px;
+  margin-top: 5px;
+  line-height: 30px;
+  text-align: center;
+  font-weight: lighter;
+  letter-spacing: 5px;
+  font-size: 15px;
 }

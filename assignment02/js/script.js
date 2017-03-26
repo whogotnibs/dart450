@@ -10,10 +10,10 @@ Spin around with the arrow keys(for now)
 //organizing the rooms
 var room = [
   //[room connected to north wall, "..."east, "..."south, "..."west, room colour]
-  /*0*/[null, 1, 2, 3, 'pink'],
-  /*1*/[null, null, null, 0, 'brown'],
-  /*2*/[0, null, null, null, 'lavender'],
-  /*3*/[null, 0, null, null, 'beige'],
+  /*0*/[null, 1, 2, 3, 'white'],
+  /*1*/[null, null, null, 0, 'red'],
+  /*2*/[0, null, null, null, 'blue'],
+  /*3*/[null, 0, null, null, 'yellow'],
 ];
 
 //start in the 0th room
