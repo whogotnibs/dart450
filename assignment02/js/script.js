@@ -629,7 +629,6 @@ function info () {
   }
 
   var txt = $("<p class='info'>" +
-    "orientation: " + orientation + "<br/>" +
     "room: " + room[r][4] + "<br/>" +
     "facing-room: " + facing + "</p>");
 
