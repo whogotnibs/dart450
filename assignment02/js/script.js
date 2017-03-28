@@ -11,9 +11,19 @@ Spin around with the arrow keys(for now)
 var room = [
   //[room connected to north wall, "..."east, "..."south, "..."west, room colour]
   /*0*/[null, 1, 2, 3, 'white'],
-  /*1*/[null, null, null, 0, 'red'],
-  /*2*/[0, null, null, null, 'blue'],
-  /*3*/[null, 0, null, null, 'yellow'],
+  /*1*/[null, null, null, 0, 'lavenderblush'],
+  /*2*/[0, null, 6, null, 'honeydew'],
+  /*3*/[null, 0, null, 4, 'azure'],
+  /*4*/[null, 3, 5, null, 'beige'],
+  /*5*/[4, null, null, null, 'cornsilk'],
+  /*6*/[2, 7, 8, null, 'oldlace'],
+  /*7*/[null, null, 9, 6, 'aliceblue'],
+  /*8*/[6, 9, null, null, 'ivory'],
+  /*9*/[7, 10, null, 8, 'ghostwhite'],
+  /*10*/[null, null, 11, 9, 'mintcream'],
+  /*11*/[10, 13, 12, null, 'lightyellow'],
+  /*12*/[11, null, null, null, 'seashell'],
+  /*13*/[null, null, null, 11, 'papayawhip'],
 ];
 
 //start in the 0th room
@@ -107,6 +117,8 @@ animate ();
 spin ();
 
 move ();
+
+setInterval(info, SPIN_INT);
 
 });
 
@@ -341,6 +353,7 @@ function animateSpin () {
   $('#canvas').css({
     'background-color': room[r][4]
   })
+
 }
 
 //a function that redraws each of the room's lines
@@ -566,6 +579,16 @@ function forward () {
     clearInterval(moving);
     //then reset the counter...
     m = 0;
+
+    //fade out the instructions once the player has left the 0th room
+    //and fade in the room colour
+    if (r != 0) {
+      $(".instructions").animate({
+        opacity: 0
+      }, 1000);
+    }
+
+
   }
   console.log(m, r);
 }
@@ -593,4 +616,22 @@ function animateMove () {
   //add the new hole and update the drawing stage
   stage.addChild(hole);
   stage.update();
+}
+
+function info () {
+  $('.info').remove(txt);
+
+  if (room[r][f] == undefined || room[r][f] == null) {
+    var facing = "none";
+  }
+  else {
+    var facing = room[room[r][f]][4];
+  }
+
+  var txt = $("<p class='info'>" +
+    "orientation: " + orientation + "<br/>" +
+    "room: " + room[r][4] + "<br/>" +
+    "facing-room: " + facing + "</p>");
+
+  $('body').append(txt);
 }
