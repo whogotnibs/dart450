@@ -10,20 +10,44 @@ Spin around with the arrow keys(for now)
 //organizing the rooms
 var room = [
   //[room connected to north wall, "..."east, "..."south, "..."west, room colour]
-  /*0*/[null, 1, 2, 3, 'white'],
-  /*1*/[null, null, null, 0, 'lavenderblush'],
-  /*2*/[0, null, 6, null, 'honeydew'],
-  /*3*/[null, 0, null, 4, 'azure'],
-  /*4*/[null, 3, 5, null, 'beige'],
-  /*5*/[4, null, null, null, 'cornsilk'],
-  /*6*/[2, 7, 8, null, 'oldlace'],
-  /*7*/[null, null, 9, 6, 'aliceblue'],
-  /*8*/[6, 9, null, null, 'ivory'],
-  /*9*/[7, 10, null, 8, 'ghostwhite'],
-  /*10*/[null, null, 11, 9, 'mintcream'],
-  /*11*/[10, 13, 12, null, 'lightyellow'],
-  /*12*/[11, null, null, null, 'seashell'],
-  /*13*/[null, null, null, 11, 'papayawhip'],
+  /*0*/[null, null, 1, null, 'red'],
+  /*1*/[0, 3, null, 2, 'navajowhite'],
+  /*2*/[null, 1, null, null, 'powderblue'],
+  /*3*/[null, 4, null, 1, 'rosybrown'],
+  /*4*/[6, 5, 8, 3, 'khaki'],
+  /*5*/[null, null, null, 4, 'aquamarine'],
+  /*6*/[7, null, 4, null, 'violet'],
+  /*7*/[null, null, 6, null, 'salmon'],
+  /*8*/[4, null, 9, null, 'slateblue'],
+  /*9*/[8, 11, null, 10, 'darkseagreen'],
+  /*10*/[null, 9, null, null, 'peru'],
+  /*11*/[null, 12, null, 9, 'peachpuff'],
+  /*12*/[null, null, 13, 11, 'brown'],
+  /*13*/[12, null, 14, null, 'goldenrod'],
+  /*14*/[13, null, null, 15, 'chartreuse'],
+  /*15*/[null, 14, null, 16, '#7fdf00'],
+  /*16*/[null, 15, null, 17, '#7fbf00'],
+  /*17*/[null, 16, null, 18, '#7f9f00'],
+  /*18*/[null, 17, null, 19, '#7f7f00'],
+  /*19*/[20, 18, null, 21, '#7f5f00'],
+  /*20*/[null, null, 19, null, 'gold'],
+  /*21*/[null, 19, null, 22, '#7f3f00'],
+  /*22*/[null, 21, null, 23, '#7f1f00'],
+  /*23*/[25, 22, 24, null, 'pink'],
+  /*24*/[23, null, 26, null, 'thistle'],
+  /*25*/[null, null, 23, null, 'fuchsia'],
+  /*26*/[24, null, null, 27, 'honeydew'],
+  /*27*/[null, 26, null, 29, 'darkorchid'],
+  /*28*/[30, null, 29, null, 'paleturquoise'],
+  /*29*/[28, 27, null, 31, 'forestgreen'],
+  /*30*/[30, 30, 30, 30, 'lime'],
+  /*31*/[null, 29, null, 32, 'teal'],
+  /*32*/[33, 31, null, null, 'orange'],
+  /*33*/[34, null, 32, null, 'lavender'],
+  /*34*/[36, 35, 33, null, 'crimson'],
+  /*35*/[null, 30, null, 34, 'sandybrown'],
+  /*36*/[37, null, 34, null, 'navy'],
+  /*37*/[null, null, 36, null, 'white']
 ];
 
 //start in the 0th room
@@ -45,7 +69,7 @@ var orientation = 0;
 //how many degrees to spin...
 const SPIN_DEG = 1;
 //over this many milliseconds
-const SPIN_INT = 15;
+const SPIN_INT = 5;
 
 //updating the forward movement through a hole this often
 const MOVE_INT = 5;
@@ -118,7 +142,9 @@ spin ();
 
 move ();
 
-setInterval(info, SPIN_INT);
+setInterval(info, ANI_INT);
+
+specialRooms ();
 
 });
 
@@ -618,6 +644,7 @@ function animateMove () {
   stage.update();
 }
 
+//the colour id tool
 function info () {
   $('.info').remove(txt);
 
@@ -633,4 +660,55 @@ function info () {
     "facing-room: " + facing + "</p>");
 
   $('body').append(txt);
+}
+
+function specialRooms () {
+  if (r = 0) {
+    redRoom ();
+    console.log('redroooom');
+  }
+  /*
+  rosybrownRoom ();
+  goldenrodRoom ();
+  chartreuseRoom ();
+  goldRoom ();
+  pinkRoom ();
+  honeydewRoom ();
+  darkorchidRoom ();
+  limeRoom();
+  lavenderRoom();
+  navyRoom();
+  whiteRoom();
+  */
+}
+
+function redRoom () {
+  // Generate the element for the dialog
+  var dialog = $('<div id="dialog" title="NOTE"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>You found a note. Do you want to pick it up?<p></div>')
+  var dialogx = canvasWidth/2;
+  var dialogy = canvasHeight/2;
+
+  // Turn the element into a dialog with jQuery UI's .dialog()
+  dialog.dialog({
+    // Position it in the center of the the canvas
+    position: {
+      my: "center",
+      at: "left+" + dialogx + " top+" + dialogy,
+      of: window
+    },
+    resizable: false,
+    height: "auto",
+    width: 400,
+    modal: false,
+    autoOpen: true,
+    buttons: { // Specify the buttons in the dialog
+      "Pick Up Note": function() {
+        $(this).dialog("close");
+        // '../downloads/note01.txt';
+      },
+      "Leave Note": function() {
+        $(this).dialog("close");
+      }
+    }
+  });
 }
