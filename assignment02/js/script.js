@@ -1,6 +1,6 @@
 /*
 
-3d Maze
+ROOMS
 Thomas Bell
 
 Spin around with the arrow keys(for now)
@@ -33,7 +33,7 @@ var room = [
   /*20*/[null, null, 19, null, 'gold'],
   /*21*/[null, 19, null, 22, '#7f3f00'],
   /*22*/[null, 21, null, 23, '#7f1f00'],
-  /*23*/[25, 22, 24, null, 'pink'],
+  /*23*/[null, 22, null, null, 'black'],
   /*24*/[23, null, 26, null, 'thistle'],
   /*25*/[null, null, 23, null, 'fuchsia'],
   /*26*/[24, null, null, 27, 'honeydew'],
@@ -44,10 +44,9 @@ var room = [
   /*31*/[null, 29, null, 32, 'teal'],
   /*32*/[33, 31, null, null, 'orange'],
   /*33*/[34, null, 32, null, 'lavender'],
-  /*34*/[36, 35, 33, null, 'crimson'],
-  /*35*/[null, 30, null, 34, 'sandybrown'],
-  /*36*/[37, null, 34, null, 'navy'],
-  /*37*/[null, null, 36, null, 'white']
+  /*34*/[35, null, 33, null, 'crimson'],
+  /*35*/[null, 36, 34, null, 'navy'],
+  /*36*/[null, null, null, 35, 'white']
 ];
 
 //start in the 0th room
@@ -134,17 +133,47 @@ const HOLE_SIZE = 150;
 //how much the holes change in size during a spin to simulate perspective
 const HOLE_GROWTH = 75;
 
+//variables to keep track of items (so you cant pick them up twice)
+var note;
+var goldenpackage;
+var compass;
+var colouridtool;
+var lantern;
+var honeydewpackage;
+var roomsim;
+var whitepackage;
+
+var light;
+
+var lanternActivated = false;
+var colourIDActivated = false;
+var compassActivated = false;
+
+var dialogTitle;
+var dialogAlert;
+var dialogButtonA;
+var dialogButtonAResults;
+var dialogButtonB;
+var dialogButtonBResults;
+
+//so we can prevent things from running once the game is over
+var end;
+
 $(document).ready(function() {
 
-animate ();
+if (end != true) {
+  animate ();
 
-spin ();
+  spin ();
 
-move ();
+  move ();
 
-setInterval(info, ANI_INT);
+  setInterval(colourID, ANI_INT);
 
-specialRooms ();
+  specialRooms ();
+
+  codes ();
+}
 
 });
 
@@ -155,7 +184,7 @@ function spin () {
 
     //dont allow the user to start a new spinning interval if they are
     //already spinning or moving
-    if (n != 0) {}
+    if (n != 0 || m != 0) {}
 
     //if the right arrow key is pressed down spin clockwise
     else if (event.which == 39) {
@@ -169,6 +198,11 @@ function spin () {
       //counter clockwise, d = 1
       d = 1;
       spinning = setInterval(rotate, SPIN_INT);
+    }
+
+    //if the up arrow key is pressed down move forward
+    else if (event.which == 38 && room[r][f] != null) {
+      moving = setInterval(forward, MOVE_INT);
     }
   });
 }
@@ -279,12 +313,14 @@ function checkHole () {
 
 //a function that rotates the compass based on the orientation
 function compass () {
-  $('#compass').css({
-
-    //the compass needs to rotate the opposite direction
-    //than the player is spinning
-    transform: 'rotate('+ (360 - orientation) +'deg)'
-  });
+  if (compassActivated == true) {
+    $('#compass').css({
+      visibility: "visible",
+      //the compass needs to rotate the opposite direction
+      //than the player is spinning
+      transform: 'rotate('+ (360 - orientation) +'deg)'
+    });
+  }
 }
 
 //a function that animates the players movements in the maze
@@ -315,7 +351,6 @@ function animateSpin () {
 
   //move the keypoints if spinning clockwise
   if (d != 1) {
-
     //for the first half of the turn (0-45deg)...
     if (n < 45) {
       ax = bx = (canvasWidth*(1-SCALE))-(canvasWidth*(1-SCALE)*(n/45));
@@ -338,7 +373,6 @@ function animateSpin () {
 
   //move keypoints if spinning counter clockwise
   else {
-
     //for the first half of the turn (0-45deg)...
     if (n < 45) {
       ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));
@@ -594,6 +628,7 @@ function move () {
   });
 }
 
+//
 function forward () {
   //advance the counter
   m = m + 1;
@@ -605,6 +640,18 @@ function forward () {
     clearInterval(moving);
     //then reset the counter...
     m = 0;
+
+    //check if there is something special to be done (dialog box, download, etc.)
+    specialRooms ();
+
+    //play the appropriate music for the room
+    if (r == 1) {
+      stageOneMusic();
+    }
+    else if (r == 14) {
+      Gibber.clear()
+      stageTwoMusic();
+    }
 
     //fade out the instructions once the player has left the 0th room
     //and fade in the room colour
@@ -645,46 +692,96 @@ function animateMove () {
 }
 
 //the colour id tool
-function info () {
-  $('.info').remove(txt);
+function colourID () {
+  if (colourIDActivated == true) {
+    console.log("asd");
 
-  if (room[r][f] == undefined || room[r][f] == null) {
-    var facing = "none";
+    $('.info').remove(txt);
+
+    if (room[r][f] == undefined || room[r][f] == null) {
+      facing = "none";
+    }
+    else {
+      facing = room[room[r][f]][4];
+    }
+
+    var txt = $("<p class='info'>" +
+      "room: " + room[r][4] + "<br/>" +
+      "facing-room: " + facing + "</p>");
+
+    $('body').append(txt);
   }
-  else {
-    var facing = room[room[r][f]][4];
-  }
-
-  var txt = $("<p class='info'>" +
-    "room: " + room[r][4] + "<br/>" +
-    "facing-room: " + facing + "</p>");
-
-  $('body').append(txt);
 }
 
+
 function specialRooms () {
-  if (r = 0) {
-    redRoom ();
-    console.log('redroooom');
+  if (r == 1) {
+    navajoRoom ();
+  }
+  if (r == 23 && lanternActivated != true) {
+    darkRoom ();
+  }
+  if (r == 36) {
+    end ();
   }
   /*
   rosybrownRoom ();
   goldenrodRoom ();
   chartreuseRoom ();
   goldRoom ();
-  pinkRoom ();
   honeydewRoom ();
   darkorchidRoom ();
   limeRoom();
   lavenderRoom();
   navyRoom();
-  whiteRoom();
   */
 }
 
-function redRoom () {
+function navajoRoom () {
+  // dialogTitle = "NOTE!";
+  // dialogAlert = "You found a note. Pick up the note?";
+  // dialogButtonA = "Pick Up the Note";
+  // dialogButtonAResults = "$(this).dialog('close'); location.href = '../downloads/note01.rtf'; note = 'seen';"
+  // dialogButtonB = "Leave the Note";
+  // dialogButtonBResults = "$(this).dialog('close');";
+  //
+  //
+  // dialogBox();
   // Generate the element for the dialog
-  var dialog = $('<div id="dialog" title="NOTE"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>You found a note. Do you want to pick it up?<p></div>')
+  var dialog = $('<div id="dialog" title="NOTE!"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>You found a note. Pick up the note?<p></div>')
+  var dialogx = canvasWidth/2;
+  var dialogy = canvasHeight/2;
+
+  if (note != 'seen') {
+    // Turn the element into a dialog with jQuery UI's .dialog()
+    dialog.dialog({
+      // Position it in the center of the the canvas
+      position: {
+        my: "center",
+        at: "left+" + dialogx + " top+" + dialogy,
+        of: "#canvas"
+      },
+      resizable: false,
+      height: "auto",
+      width: 400,
+      modal: false,
+      autoOpen: true,
+      buttons: { // Specify the buttons in the dialog
+        "Pick Up the Note": function() {
+          $(this).dialog("close");
+          location.href = '../downloads/note01.rtf';
+          note = 'seen';
+        },
+        "Leave the Note": function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+  }
+}
+
+function darkRoom () {
+  var dialog = $('<div class="dialog" title="DARKNESS!"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>This part of the map is too dark to explore without a lantern.<p></div>')
   var dialogx = canvasWidth/2;
   var dialogy = canvasHeight/2;
 
@@ -694,7 +791,7 @@ function redRoom () {
     position: {
       my: "center",
       at: "left+" + dialogx + " top+" + dialogy,
-      of: window
+      of: "#canvas"
     },
     resizable: false,
     height: "auto",
@@ -702,13 +799,234 @@ function redRoom () {
     modal: false,
     autoOpen: true,
     buttons: { // Specify the buttons in the dialog
-      "Pick Up Note": function() {
-        $(this).dialog("close");
-        // '../downloads/note01.txt';
-      },
-      "Leave Note": function() {
+      "OK": function() {
         $(this).dialog("close");
       }
     }
   });
 }
+
+function pinkRoom () {
+  room[23] = [25, 22, 24, null, 'pink'];
+}
+
+function end () {
+  $('body').css({
+    backgroundColor: 'white',
+  });
+  $('#canvas').css({
+    visibility: 'hidden',
+  });
+  end = true;
+}
+
+// function dialogBox () {
+//   var dialog = $('<div class="dialog" title="'+ dialogTitle +'"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>'+ dialogAlert +'<p></div>')
+//   var dialogx = canvasWidth/2;
+//   var dialogy = canvasHeight/2;
+//
+//   // Turn the element into a dialog with jQuery UI's .dialog()
+//   dialog.dialog({
+//     // Position it in the center of the the canvas
+//     position: {
+//       my: "center",
+//       at: "left+" + dialogx + " top+" + dialogy,
+//       of: "#canvas"
+//     },
+//     resizable: false,
+//     height: "auto",
+//     width: 400,
+//     modal: false,
+//     autoOpen: true,
+//     buttons: { // Specify the buttons in the dialog
+//       "+ dialogButtonA +" : function() {
+//         dialogButtonAResults;
+//       },
+//       "+ dialogButtonB +" : function() {
+//         dialogButtonBResults;
+//       }
+//     }
+//   });
+// }
+
+function codes () {
+  var codeString = '';
+
+  $(document).keypress(function (event) {
+    codeString += event.key;
+    //activate lantern
+    if (codeString.indexOf("illuminate") != -1) {
+      lanternActivated = true;
+      pinkRoom();
+    }
+
+    //activate colour id tool
+    if (codeString.indexOf("rgb") != -1) {
+      colourIDActivated = true;
+    }
+
+    //activate compass
+    if (codeString.indexOf("lost") != -1) {
+      compassActivated = true;
+      compass ();
+    }
+
+    //DEV
+    //stage 2
+    if (codeString.indexOf("stage2") != -1) {
+      lanternActivated = true;
+      compassActivated = true;
+      colourIDActivated = true;
+      r = 13;
+    }
+  });
+}
+
+function stageOneMusic () {
+
+  Gibber.init()
+  Clock.rate = 0.6
+
+  a = EDrums('x...ox.x....o...')
+    a.snare.snappy = 1.5
+    a.kick.decay = 0.3
+    a.amp = 2
+
+  b = Synth({ maxVoices:4, waveform:'Saw', attack:ms(200), decay:ms(3000) })
+  c = FM('bass',{decay:ms(200)})
+
+  score = Score([
+  0, c.note.score( [],2 ),
+  measures(1), function() {
+    b.amp = 0.2
+    c.amp = 2
+    c.note.seq(['c2','eb2','c2','eb2'], [11/16,5/16])
+    b.chord.seq(['c3m11', 'c3maj9','c3min9',],[3/2,1/2,2])
+  },
+  measures(4), function() {
+    b.chord.seq(['e3min9'],1)
+    c.note.seq(['e2'],[1.5/16,1.5/16,1.5/16,1.5/16,2/16])
+  },
+  measures(0.5), function() {
+    c.note.seq(['c2','eb2','c2','eb2'], [11/16,5/16])
+    b.chord.seq(['c3m11', 'c3maj9','c3min9',],[3/2,1/2,2])
+  },
+  measures(2), function() {
+    b.chord.seq(['e3min9'],1)
+    c.note.seq(['e2'],[1.5/16,1.5/16,1.5/16,1.5/16,2/16])
+  },
+  measures(0.5), function() {
+    c.note.seq(['c2','eb2','c2','eb2'], [11/16,5/16])
+    b.chord.seq(['c3m11', 'c3maj9','c3min9',],[3/2,1/2,2])
+  },
+  measures(2), function() {
+    b.chord.seq(['e3min9'],1)
+    c.note.seq(['e2'],[1.5/16,1.5/16,1.5/16,1.5/16,2/16])
+  },
+  measures(0.5), function() {
+    c.note.seq(['c2','eb2','c2','eb2'], [11/16,5/16])
+    b.chord.seq(['c3m11', 'c3maj9','c3min9',],[3/2,1/2,2])
+  },
+  measures(2), function() {
+    b.chord.seq(['e3min9'],1)
+    c.note.seq(['e2'],[1.5/16,1.5/16,1.5/16,1.5/16,2/16])
+  },
+  measures(0.5), function() {
+    c.note.seq(['c2','eb2','c2','eb2'], [11/16,5/16])
+    b.chord.seq(['c3m11', 'c3maj9','c3min9',],[3/2,1/2,2])
+  },
+  measures(2), function() {
+    c.note.seq(['c2','c3','a#3','c3','f3','g3','a#2','c2'], [2/16,2/16,1/16,3/16,1/16,1/16,1/16,5/16])
+  },
+  ]).start()
+}
+
+function stageTwoMusic () {
+  Gibber.init()
+  Clock.rate = 0.6
+
+  a = EDrums('x**xo****-*-*-')
+    .snare.snappy = 1
+    .amp = 3
+
+  b = Synth({ maxVoices:4, waveform:'Triangle', attack:ms(600), decay:ms(3000) })
+  d = Synth({ maxVoices:4, waveform:'Saw', attack:ms(10), decay:ms(3000) })
+  c = FM('bass',{decay:ms(400)})
+  score = Score([
+    0, c.note.score( [],1 ),
+    measures(2), function() {
+      b.amp = 0.5
+      c.amp = 2
+      d.amp = 0.1
+      c.note.seq(['e2','d2','e2','e2','d2','e2','e1'], [1.5/14,1.5/14,11/14,1.5/14,1.5/14,1/14,10/14])
+      b.chord.seq(['c3maj7', 'c#3min7','e3min7',],[4/7,3/7,1])
+    },
+    measures(4), function() {
+      d.fx.add( Tremolo({ amp: 1, frequency:1.4 }) )
+      b.chord.seq.stop()
+      d.chord.seq([[],'e4min11'],[8/14,6/14])
+      c.note.seq(['e1','e#1','e1'], [3/14,3/14,8/14])
+    },
+    measures(4), function() {
+      d.chord.seq.stop()
+      c.note.seq(['e2','d2','e2','e2','d2','e2','e1'], [1.5/14,1.5/14,11/14,1.5/14,1.5/14,1/14,10/14])
+      b.chord.seq(['c3maj7', 'c#3min7','e3min7',],[4/7,3/7,1])
+    },
+    measures(8), function() {
+      b.chord.seq.stop()
+      d.chord.seq([[],'e4min11'],[8/14,6/14])
+      c.note.seq(['e1','e#1','e1'], [3/14,3/14,8/14])
+      d.fadeOut2(16)
+      c.fadeOut2(16)
+    },
+  ]).start()
+}
+
+    //
+    // a = EDrums('x..x..x..*x*ox**')
+    //   .fx.add( Reverb({ roomSize: 0.9 }) )
+    //   .snare.snappy = 1
+    //   .amp = 3
+    //
+    // b = FM('bass',{decay:ms(500)})
+    // c = Synth({ maxVoices:4, waveform:'Sine', attack:ms(10), decay:ms(1000) })
+    //
+    // score = Score([
+    //
+    //   0, b.note.score( [],1 ),
+    //   measures(1), c.chord.score( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+    //   measures(2), b.note.score( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] ),
+    //   measures(2), c.chord.score( ['e3min7','a3min11',],[1,1] ),
+    //   measures(2), function() {
+    //     c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+    //     b.note.seq.stop()
+    //     b.amp = 0.6
+    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+    //   },
+    //   measures(2), function() {
+    //     c.chord.seq( ['e3min7','a3min11',],[1,1] )
+    //     b.amp = 0.4
+    //     b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
+    //   },
+    //   measures(2), function() {
+    //     c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+    //     b.note.seq.stop()
+    //     b.amp = 0.6
+    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+    //   },
+    //   measures(4), function() {
+    //     c.chord.seq( ['e3min7','a3min11',],[1,1] )
+    //     b.amp = 0.4
+    //     b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
+    //   },
+    //   measures(2), function() {
+    //     c.chord.seq( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+    //     b.note.seq.stop()
+    //     b.amp = 0.6
+    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+    //     b.fadeOut2(16)
+    //     c.fadeOut2(16)
+    //   },
+    // ]).start()
+    //
+    //
