@@ -74,6 +74,13 @@ h2 {
   text-align: center;
 }
 
-.dialog {
-  
+#lights {
+  height: 300px;
+  width: 900px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -450px;
+  z-index: 0;
+  visibility: hidden;
 }

@@ -135,13 +135,14 @@ const HOLE_GROWTH = 75;
 
 //variables to keep track of items (so you cant pick them up twice)
 var note;
-var goldenpackage;
-var compass;
+var comp;
 var colouridtool;
+var packageOne;
 var lantern;
-var honeydewpackage;
+var packageTwo;
 var roomsim;
-var whitepackage;
+var packageThree;
+var packageFour;
 
 var light;
 
@@ -149,17 +150,12 @@ var lanternActivated = false;
 var colourIDActivated = false;
 var compassActivated = false;
 
-var dialogTitle;
-var dialogAlert;
-var dialogButtonA;
-var dialogButtonAResults;
-var dialogButtonB;
-var dialogButtonBResults;
-
 //so we can prevent things from running once the game is over
 var end;
 
 $(document).ready(function() {
+
+Gibber.init();
 
 if (end != true) {
   animate ();
@@ -644,15 +640,6 @@ function forward () {
     //check if there is something special to be done (dialog box, download, etc.)
     specialRooms ();
 
-    //play the appropriate music for the room
-    if (r == 1) {
-      stageOneMusic();
-    }
-    else if (r == 14) {
-      Gibber.clear()
-      stageTwoMusic();
-    }
-
     //fade out the instructions once the player has left the 0th room
     //and fade in the room colour
     if (r != 0) {
@@ -661,7 +648,15 @@ function forward () {
       }, 1000);
     }
 
-
+    //play the appropriate music for the room
+    if (r == 1) {
+      setTimeout(stageOneMusic,100);
+      Gibber.clear();
+    }
+    else if (r == 14) {
+      setTimeout(stageTwoMusic,100);
+      Gibber.clear();
+    }
   }
   console.log(m, r);
 }
@@ -694,7 +689,6 @@ function animateMove () {
 //the colour id tool
 function colourID () {
   if (colourIDActivated == true) {
-    console.log("asd");
 
     $('.info').remove(txt);
 
@@ -715,75 +709,154 @@ function colourID () {
 
 
 function specialRooms () {
-  if (r == 1) {
+  if (r == 1 && note != "seen") {
     navajoRoom ();
+  }
+  if (r == 4 && comp != "seen") {
+    khakiRoom ();
+  }
+  if (r == 11 && colouridtool != "seen") {
+    peachpuffRoom ();
+  }
+  if (r == 13 && packageOne != "seen") {
+    goldenrodRoom ();
+  }
+  if (r == 20 && lantern != "seen") {
+    goldRoom ();
   }
   if (r == 23 && lanternActivated != true) {
     darkRoom ();
   }
-  if (r == 36) {
-    end ();
+  if (r == 26 && packageTwo != "seen") {
+    honeydewRoom ();
+  }
+  if (r == 30 && packageFour != "seen") {
+    packageFour = "seen";
+    setTimeout(limeRoom, 10000);
   }
   /*
-  rosybrownRoom ();
-  goldenrodRoom ();
-  chartreuseRoom ();
-  goldRoom ();
-  honeydewRoom ();
-  darkorchidRoom ();
-  limeRoom();
   lavenderRoom();
   navyRoom();
   */
-}
-
-function navajoRoom () {
-  // dialogTitle = "NOTE!";
-  // dialogAlert = "You found a note. Pick up the note?";
-  // dialogButtonA = "Pick Up the Note";
-  // dialogButtonAResults = "$(this).dialog('close'); location.href = '../downloads/note01.rtf'; note = 'seen';"
-  // dialogButtonB = "Leave the Note";
-  // dialogButtonBResults = "$(this).dialog('close');";
-  //
-  //
-  // dialogBox();
-  // Generate the element for the dialog
-  var dialog = $('<div id="dialog" title="NOTE!"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>You found a note. Pick up the note?<p></div>')
-  var dialogx = canvasWidth/2;
-  var dialogy = canvasHeight/2;
-
-  if (note != 'seen') {
-    // Turn the element into a dialog with jQuery UI's .dialog()
-    dialog.dialog({
-      // Position it in the center of the the canvas
-      position: {
-        my: "center",
-        at: "left+" + dialogx + " top+" + dialogy,
-        of: "#canvas"
-      },
-      resizable: false,
-      height: "auto",
-      width: 400,
-      modal: false,
-      autoOpen: true,
-      buttons: { // Specify the buttons in the dialog
-        "Pick Up the Note": function() {
-          $(this).dialog("close");
-          location.href = '../downloads/note01.rtf';
-          note = 'seen';
-        },
-        "Leave the Note": function() {
-          $(this).dialog("close");
-        }
-      }
-    });
+  if (r == 36) {
+    end ();
   }
 }
 
+function navajoRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/note01.rtf';
+    note = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A NOTE!', 'You found a <i>note</i>. Pick up the <i>note</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function khakiRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/compass.rtf';
+    comp = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A COMPASS!', 'You found a <i>compass</i>. Pick up the <i>compass</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function peachpuffRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/colour_id_tool.rtf';
+    colouridtool = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A COLOUR ID TOOL!', 'You found a <i>colour ID tool</i>. Pick up the <i>colour ID tool</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function goldenrodRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/package01.zip';
+    packageOne = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A PACKAGE!', 'You found a <i>package</i>. Pick up the <i>package</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function goldRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/lantern.rtf';
+    lantern = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A LANTERN!', 'You found a <i>lantern</i>. Pick up the <i>lantern</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
 function darkRoom () {
-  var dialog = $('<div class="dialog" title="DARKNESS!"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>This part of the map is too dark to explore without a lantern.<p></div>')
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('DARKNESS!', 'This part of the map is too dark to explore without a lantern', 'OK', dialogButtonAResults)
+}
+
+function pinkRoom () {
+  room[23] = [25, 22, 24, null, 'pink'];
+}
+
+function honeydewRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/package02.zip';
+    packageTwo = 'seen';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+  }
+  dialogBox('A PACKAGE!', 'You found a <i>package</i>. Pick up the <i>package</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function limeRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/package04.zip';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+    packageFour = "closed";
+  }
+  dialogBox('A PACKAGE!', 'You found a <i>package</i>. Pick up the <i>package</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function end () {
+  $('body').css({
+    backgroundColor: 'white',
+  });
+  $('#canvas').css({
+    visibility: 'hidden',
+  });
+  location.href = '../downloads/package03.zip';
+  end = true;
+}
+
+function dialogBox (dialogTitle, dialogAlert, dialogButtonA, dialogButtonAResults, dialogButtonB, dialogButtonBResults) {
+  var dialog = $('<div id="dialogBox" title="'+ dialogTitle +'"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>'+ dialogAlert +'<p></div>')
   var dialogx = canvasWidth/2;
   var dialogy = canvasHeight/2;
+
+  var buttons = {};
+  buttons[dialogButtonA] = dialogButtonAResults;
+  buttons[dialogButtonB] = dialogButtonBResults;
 
   // Turn the element into a dialog with jQuery UI's .dialog()
   dialog.dialog({
@@ -798,56 +871,9 @@ function darkRoom () {
     width: 400,
     modal: false,
     autoOpen: true,
-    buttons: { // Specify the buttons in the dialog
-      "OK": function() {
-        $(this).dialog("close");
-      }
-    }
+    buttons,
   });
 }
-
-function pinkRoom () {
-  room[23] = [25, 22, 24, null, 'pink'];
-}
-
-function end () {
-  $('body').css({
-    backgroundColor: 'white',
-  });
-  $('#canvas').css({
-    visibility: 'hidden',
-  });
-  end = true;
-}
-
-// function dialogBox () {
-//   var dialog = $('<div class="dialog" title="'+ dialogTitle +'"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>'+ dialogAlert +'<p></div>')
-//   var dialogx = canvasWidth/2;
-//   var dialogy = canvasHeight/2;
-//
-//   // Turn the element into a dialog with jQuery UI's .dialog()
-//   dialog.dialog({
-//     // Position it in the center of the the canvas
-//     position: {
-//       my: "center",
-//       at: "left+" + dialogx + " top+" + dialogy,
-//       of: "#canvas"
-//     },
-//     resizable: false,
-//     height: "auto",
-//     width: 400,
-//     modal: false,
-//     autoOpen: true,
-//     buttons: { // Specify the buttons in the dialog
-//       "+ dialogButtonA +" : function() {
-//         dialogButtonAResults;
-//       },
-//       "+ dialogButtonB +" : function() {
-//         dialogButtonBResults;
-//       }
-//     }
-//   });
-// }
 
 function codes () {
   var codeString = '';
@@ -857,6 +883,7 @@ function codes () {
     //activate lantern
     if (codeString.indexOf("illuminate") != -1) {
       lanternActivated = true;
+      $("#lights").css({visibility: 'visible'});
       pinkRoom();
     }
 
@@ -870,21 +897,11 @@ function codes () {
       compassActivated = true;
       compass ();
     }
-
-    //DEV
-    //stage 2
-    if (codeString.indexOf("stage2") != -1) {
-      lanternActivated = true;
-      compassActivated = true;
-      colourIDActivated = true;
-      r = 13;
-    }
   });
 }
 
+//all of this remaining code is composed and written by Adrian Hu
 function stageOneMusic () {
-
-  Gibber.init()
   Clock.rate = 0.6
 
   a = EDrums('x...ox.x....o...')
@@ -942,7 +959,6 @@ function stageOneMusic () {
 }
 
 function stageTwoMusic () {
-  Gibber.init()
   Clock.rate = 0.6
 
   a = EDrums('x**xo****-*-*-')
@@ -982,51 +998,51 @@ function stageTwoMusic () {
   ]).start()
 }
 
-    //
-    // a = EDrums('x..x..x..*x*ox**')
-    //   .fx.add( Reverb({ roomSize: 0.9 }) )
-    //   .snare.snappy = 1
-    //   .amp = 3
-    //
-    // b = FM('bass',{decay:ms(500)})
-    // c = Synth({ maxVoices:4, waveform:'Sine', attack:ms(10), decay:ms(1000) })
-    //
-    // score = Score([
-    //
-    //   0, b.note.score( [],1 ),
-    //   measures(1), c.chord.score( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
-    //   measures(2), b.note.score( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] ),
-    //   measures(2), c.chord.score( ['e3min7','a3min11',],[1,1] ),
-    //   measures(2), function() {
-    //     c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
-    //     b.note.seq.stop()
-    //     b.amp = 0.6
-    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
-    //   },
-    //   measures(2), function() {
-    //     c.chord.seq( ['e3min7','a3min11',],[1,1] )
-    //     b.amp = 0.4
-    //     b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
-    //   },
-    //   measures(2), function() {
-    //     c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
-    //     b.note.seq.stop()
-    //     b.amp = 0.6
-    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
-    //   },
-    //   measures(4), function() {
-    //     c.chord.seq( ['e3min7','a3min11',],[1,1] )
-    //     b.amp = 0.4
-    //     b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
-    //   },
-    //   measures(2), function() {
-    //     c.chord.seq( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
-    //     b.note.seq.stop()
-    //     b.amp = 0.6
-    //     b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
-    //     b.fadeOut2(16)
-    //     c.fadeOut2(16)
-    //   },
-    // ]).start()
-    //
-    //
+function stageThreeMusic () {
+  Clock.rate = 0.6
+  a = EDrums('x..x..x..*x*ox**')
+    .fx.add( Reverb({ roomSize: 0.9 }) )
+    .snare.snappy = 1
+    .amp = 3
+
+  b = FM('bass',{decay:ms(500)})
+  c = Synth({ maxVoices:4, waveform:'Sine', attack:ms(10), decay:ms(1000) })
+
+  score = Score([
+
+    0, b.note.score( [],1 ),
+    measures(1), c.chord.score( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+    measures(2), b.note.score( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] ),
+    measures(2), c.chord.score( ['e3min7','a3min11',],[1,1] ),
+    measures(2), function() {
+      c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+      b.note.seq.stop()
+      b.amp = 0.6
+      b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+    },
+    measures(2), function() {
+      c.chord.seq( ['e3min7','a3min11',],[1,1] )
+      b.amp = 0.4
+      b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
+    },
+    measures(2), function() {
+      c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+      b.note.seq.stop()
+      b.amp = 0.6
+      b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+    },
+    measures(4), function() {
+      c.chord.seq( ['e3min7','a3min11',],[1,1] )
+      b.amp = 0.4
+      b.note.seq( ['d4','a4','d4','a3','d5'], [1.5/16,1.5/16,1.5/16,1.5/16,10/16] )
+    },
+    measures(2), function() {
+      c.chord.seq( ['c3min7', 'c#3min7','d3min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
+      b.note.seq.stop()
+      b.amp = 0.6
+      b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
+      b.fadeOut2(16)
+      c.fadeOut2(16)
+    },
+  ]).start()
+}
