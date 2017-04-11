@@ -84,3 +84,22 @@ h2 {
   z-index: 0;
   visibility: hidden;
 }
+
+textarea {
+  resize: none;
+  height: 15px;
+  width: 350px;
+  margin: -7px 0px -7px 10px;
+  display: block;
+  background-color: black;
+  color: white;
+  border-color: red;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.comment {
+  color: grey
+}

@@ -45,12 +45,14 @@ var room = [
   /*32*/[33, 31, null, null, 'orange'],
   /*33*/[34, null, 32, null, 'lavender'],
   /*34*/[35, null, 33, null, 'crimson'],
-  /*35*/[null, 36, 34, null, 'navy'],
+  /*35*/[null, null, null, null, 'navy'],
   /*36*/[null, null, null, 35, 'white']
 ];
 
 //start in the 0th room
 var r = 0;
+//set the previous room
+var pr = -1;
 
 //start facing a wall with no hole
 //(two vars to accomodate the case where a hole is leaving while one is entering)
@@ -95,6 +97,8 @@ var windowWidth;
 var windowHeight;
 var canvasWidth;
 var canvasHeight;
+
+var solved;
 
 //a place to store the eiseljs drawing stage and lines for animating...
 var stage;
@@ -141,10 +145,9 @@ var packageOne;
 var lantern;
 var packageTwo;
 var roomsim;
+var navy;
 var packageThree;
 var packageFour;
-
-var light;
 
 var lanternActivated = false;
 var colourIDActivated = false;
@@ -152,6 +155,8 @@ var compassActivated = false;
 
 //so we can prevent things from running once the game is over
 var end;
+
+var cheat;
 
 $(document).ready(function() {
 
@@ -226,6 +231,15 @@ function rotate () {
 
   //stop spinning when the counter reaches 90 (N, E, S, or W)
   if (n >= 90 / SPIN_DEG) {
+    //check to see if player is in the navy or lime rooms
+    if (r == 35 && navy != "seen") {
+      navy = "seen";
+      setTimeout(navyRoom, 10000);
+    }
+    if (r == 30 && packageFour != "seen") {
+      packageFour = "seen";
+      setTimeout(limeRoom, 10000);
+    }
 
     //clear the spinning interval...
     clearInterval(spinning);
@@ -356,6 +370,7 @@ function animateSpin () {
       cy = canvasHeight*(1-SCALE)+(canvasHeight*(1-SCALE)*(n/45));
       dy = canvasHeight*SCALE-(canvasHeight*(1-SCALE)*(n/45));
     }
+
     //and for the second half of the turn (45-90deg)
     else if (n >= 45) {
       ax = bx = canvasWidth-(canvasWidth*(1-SCALE)*((n-45)/45));
@@ -378,6 +393,7 @@ function animateSpin () {
       cy = canvasHeight*(1-SCALE)*(1-(n/45));
       dy = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));
     }
+
     //and for the second half of the turn (45-90deg)
     else if (n >= 45) {
       ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));
@@ -386,6 +402,16 @@ function animateSpin () {
       by = canvasHeight*SCALE-(canvasHeight*(2*(1-SCALE))*(1-(n/90)));
       cy = canvasHeight*(1-SCALE)*((n-45)/45);
       dy = canvasHeight-(canvasHeight*(1-SCALE)*((n-45)/45));
+    }
+  }
+
+  //creating errors for the navy room
+  if (r == 35 && solved != true) {
+    if (d != 1 && n < 45) {
+      by = canvasHeight-(canvasHeight*(SCALE)*(1-(n/45)));
+    }
+    if (d == 1 && n < 45) {
+      cy = canvasHeight*(SCALE)*(1-(n/45));
     }
   }
 
@@ -630,6 +656,7 @@ function forward () {
   m = m + 1;
   //stop at 100
   if (m >= 100) {
+    pr = r;
     //update the room
     r = room[r][f];
     //clear the moving interval...
@@ -649,12 +676,20 @@ function forward () {
     }
 
     //play the appropriate music for the room
-    if (r == 1) {
+    if ((r == 1 && pr == 0 && note != 'seen')||(r == 13 && pr == 14)) {
       setTimeout(stageOneMusic,100);
       Gibber.clear();
     }
-    else if (r == 14) {
+    else if ((r == 14 && pr == 13)||(r == 26 && pr == 27)) {
       setTimeout(stageTwoMusic,100);
+      Gibber.clear();
+    }
+    else if (r == 27 && pr == 26) {
+      setTimeout(stageThreeMusic,100);
+      Gibber.clear();
+    }
+    else if (r == 30 && pr == 29) {
+      setTimeout(limeMusic,100);
       Gibber.clear();
     }
   }
@@ -730,14 +765,9 @@ function specialRooms () {
   if (r == 26 && packageTwo != "seen") {
     honeydewRoom ();
   }
-  if (r == 30 && packageFour != "seen") {
-    packageFour = "seen";
-    setTimeout(limeRoom, 10000);
+  if (r == 33 && roomsim != "seen") {
+    lavenderRoom ();
   }
-  /*
-  lavenderRoom();
-  navyRoom();
-  */
   if (r == 36) {
     end ();
   }
@@ -838,6 +868,108 @@ function limeRoom () {
   dialogBox('A PACKAGE!', 'You found a <i>package</i>. Pick up the <i>package</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
 }
 
+function lavenderRoom () {
+  var dialogButtonAResults = function() {
+    $(this).dialog("close");
+    location.href = '../downloads/CONFIDENTIAL.zip';
+  }
+  var dialogButtonBResults = function() {
+    $(this).dialog("close");
+    roomsim = "closed";
+  }
+  dialogBox('A FILE!', 'You found a <i>file</i>. Pick up the <i>file</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
+}
+
+function navyRoom () {
+
+  var navyDialog = $('<div id="dialogBox" title="FIX ROOM"><p></div>');
+  var dialogx = canvasWidth/2;
+  var dialogy = windowHeight/2;
+
+  var textOne = '<p><span class="comment">//move the keypoints if spinning clockwise</span><br>'
+  +'if (d != 1) {<br>'
+  +'&emsp;<span class="comment">//for the first half of the turn (0-45deg)...</span><br>'
+  +'&emsp;if (n < 45){<br>'
+  +'&emsp;&emsp;ax = bx = (canvasWidth*(1-SCALE))-(canvasWidth*(1-SCALE)*(n/45));<br>'
+  +'&emsp;&emsp;cx = dx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;&emsp;ay = canvasHeight*(1-SCALE)*(1-(n/45));</p>'
+
+  var textAreaOne = $('<textarea spellcheck="false">by = canvasHeight-(canvasHeight*(SCALE)*(1-(n/45)));</textarea>');
+
+  var textTwo = $('<p>&emsp;&emsp;cy = canvasHeight*(1-SCALE)+(canvasHeight*(1-SCALE)*(n/45));<br>'
+  +'&emsp;&emsp;dy = canvasHeight*SCALE-(canvasHeight*(1-SCALE)*(n/45));<br>'
+  +'&emsp;}<br>'
+  +'&emsp;<span class="comment">//and for the second half of the turn (45-90deg)</span><br>'
+  +'&emsp;else if (n >= 45) {<br>'
+  +'&emsp;&emsp;ax = bx = canvasWidth-(canvasWidth*(1-SCALE)*((n-45)/45));<br>'
+  +'&emsp;&emsp;cx = dx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;&emsp;ay = canvasHeight*(1-SCALE)*((n-45)/45);<br>'
+  +'&emsp;&emsp;by = canvasHeight-(canvasHeight*(1-SCALE)*((n-45)/45));<br>'
+  +'&emsp;&emsp;cy = canvasHeight*(1-SCALE)+(canvasHeight*(2*(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;&emsp;dy = canvasHeight*SCALE-(canvasHeight*(2*(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;}<br>}<br><br>'
+  +'<span class="comment">//move keypoints if spinning counter clockwise</span><br>'
+  +'else {<br>'
+  +'&emsp;<span class="comment">//for the first half of the turn (0-45deg)...</span><br>'
+  +'&emsp;if (n < 45) {<br>'
+  +'&emsp;&emsp;ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));<br>'
+  +'&emsp;&emsp;cx = dx = (canvasWidth*(1-SCALE))-(canvasWidth*(1-SCALE)*(1-(n/45)))+(canvasWidth*(SCALE));<br>'
+  +'&emsp;&emsp;ay = canvasHeight*(1-SCALE)+(canvasHeight*(1-SCALE)*(n/45));<br>'
+  +'&emsp;&emsp;by = canvasHeight*SCALE-(canvasHeight*(1-SCALE)*(n/45));</p>');
+
+  var textAreaTwo = $('<textarea spellcheck="false">cy = canvasHeight*(SCALE)*(1-(n/45));</textarea>');
+
+  var textThree = $('<p>&emsp;&emsp;dy = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));<br>&emsp;}<br>'
+  +'&emsp;<span class="comment">//and for the second half of the turn (45-90deg)</span><br>'
+  +'&emsp;else if (n >= 45) {<br>'
+  +'&emsp;&emsp;ax = bx = (canvasWidth*(1-SCALE))+(canvasWidth*(SCALE-(1-SCALE))*(n/90));<br>'
+  +'&emsp;&emsp;cx = dx = (canvasWidth*(1-SCALE)*((n-45)/45));<br>'
+  +'&emsp;&emsp;ay = canvasHeight*(1-SCALE)+(canvasHeight*(2*(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;&emsp;by = canvasHeight*SCALE-(canvasHeight*(2*(1-SCALE))*(1-(n/90)));<br>'
+  +'&emsp;&emsp;cy = canvasHeight*(1-SCALE)*((n-45)/45);<br>'
+  +'&emsp;&emsp;dy = canvasHeight-(canvasHeight*(1-SCALE)*((n-45)/45));<br>'
+  +'&emsp;}<br>}</p>');
+
+
+  navyDialog.append(textOne);
+  navyDialog.append(textAreaOne);
+  navyDialog.append(textTwo);
+  navyDialog.append(textAreaTwo);
+  navyDialog.append(textThree);
+
+  // Turn the element into a dialog with jQuery UI's .dialog()
+  navyDialog.dialog({
+    // Position it in the center of the the canvas
+    position: {
+      my: "center",
+      at: "left+" + dialogx + " top+" + dialogy,
+      of: "#canvas"
+    },
+    resizable: false,
+    height: "auto",
+    width: 700,
+    modal: false,
+    autoOpen: true,
+    buttons: {
+      "Fix": function () {
+        $(this).dialog("close");
+        if (textAreaOne.val() == 'by = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));'
+        && textAreaTwo.val() == 'cy = canvasHeight*(1-SCALE)*(1-(n/45));') {
+          solved = true;
+          room[35] = [null, 36, 34, null, 'navy'];
+        }
+        else {
+          navy = false;
+          console.log(navy);
+        }
+      }
+    }
+  }).css("font-size", "10px");
+
+  //prevents highlighting of any of the buttons by default
+  $('.ui-dialog :button').blur();
+}
+
 function end () {
   $('body').css({
     backgroundColor: 'white',
@@ -873,6 +1005,9 @@ function dialogBox (dialogTitle, dialogAlert, dialogButtonA, dialogButtonAResult
     autoOpen: true,
     buttons,
   });
+
+  //prevents highlighting of any of the buttons by default
+  $('.ui-dialog :button').blur();
 }
 
 function codes () {
@@ -897,6 +1032,13 @@ function codes () {
       compassActivated = true;
       compass ();
     }
+
+    //activate compass
+    if (codeString.indexOf("room") != -1  && cheat != true) {
+      r = 34;
+      pr = 33;
+      cheat = true;
+    }
   });
 }
 
@@ -911,6 +1053,7 @@ function stageOneMusic () {
 
   b = Synth({ maxVoices:4, waveform:'Saw', attack:ms(200), decay:ms(3000) })
   c = FM('bass',{decay:ms(200)})
+  d = Synth({ maxVoices:4, waveform:'Saw', attack:ms(10), decay:ms(3000) })
 
   score = Score([
   0, c.note.score( [],2 ),
@@ -992,8 +1135,6 @@ function stageTwoMusic () {
       b.chord.seq.stop()
       d.chord.seq([[],'e4min11'],[8/14,6/14])
       c.note.seq(['e1','e#1','e1'], [3/14,3/14,8/14])
-      d.fadeOut2(16)
-      c.fadeOut2(16)
     },
   ]).start()
 }
@@ -1041,8 +1182,37 @@ function stageThreeMusic () {
       b.note.seq.stop()
       b.amp = 0.6
       b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
-      b.fadeOut2(16)
-      c.fadeOut2(16)
     },
+  ]).start()
+}
+
+function limeMusic () {
+  Clock.rate = 0.6
+
+  b = FM('bass',{decay:ms(500)})
+  b.amp = 0.6
+  c = Synth({ maxVoices:6, waveform:'Sine', attack:ms(100), decay:ms(1500) })
+  d = FM('bass',{attack:ms(100),decay:ms(500)})
+  d.fx.add( Reverb({ roomSize: 0.95 }))
+
+
+  score = Score([
+
+    0, c.chord.score( ['c5maj6','c5min6','c5min6','f4maj9','f4min9'],[3/11,1/11,1/11,3/11,3/11] ),
+    // measures(2), function() {
+    //   b.note.seq(['c2','c2','f1','f1','f1','f1'],  [1.5/11,3.5/11,1.5/11,1.5/11,1.5/11,1.5/11] )
+    //   c.chord.seq( ['c4maj6','c4min6','c4min6','f3maj9','f3min9'],[3/11,1/11,1/11,3/11,3/11] )
+    // },
+    measures(2), function() {
+      a = EDrums('x........x**x**x........o........')
+      a.kick.decay = 0.3
+      a.snare.snappy = 2
+      // a.fx.add( Reverb({ roomSize: 0.6 }) )
+      b.note.seq(['c2','c2'],  [1.5/11,9.5/11] )
+      c.chord.seq( ['c4maj6','d#3maj9','c3maj6','d#3maj9'],[9.5/11,1.5/11] )
+      d.chord.seq(['c5maj6','c5maj6','c5maj6','c4maj6','c4maj6','c4maj6'],[0.75/11,0.75/11,9.5/11,0.75/11,0.75/11,9.5/11])
+    },
+
+
   ]).start()
 }
