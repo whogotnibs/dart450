@@ -460,7 +460,13 @@ function animateRoomLines (l) {
 
   //set the line style
   line[l][0].graphics.setStrokeStyle(3);
-  line[l][0].graphics.beginStroke('black');
+  //***white stroke in the navy room
+  if (r == 35) {
+    line[l][0].graphics.beginStroke('white');
+  }
+  else {
+    line[l][0].graphics.beginStroke('black');
+  }
 
   //draw a line using the info from the array
   //set the starting point of the line...
@@ -546,7 +552,13 @@ function animateHoleOut () {
 
   //set the stroke style
   hole.graphics.setStrokeStyle(3);
-  hole.graphics.beginStroke('black');
+  //***white stroke in the navy room
+  if (r == 35) {
+    hole.graphics.beginStroke('white');
+  }
+  else {
+    hole.graphics.beginStroke('black');
+  }
 
   //draw an ellipse using the key values for its location and size
   //colour it based on the next room through the hole
@@ -571,8 +583,13 @@ function animateHoleIn () {
 
   //set the stroke style
   secondHole.graphics.setStrokeStyle(3);
-  secondHole.graphics.beginStroke('black');
-
+  //***white stroke in the navy room
+  if (r == 35) {
+    secondHole.graphics.beginStroke('white');
+  }
+  else {
+    secondHole.graphics.beginStroke('black');
+  }
   //draw an ellipse using the key values for its location and size
   //colour it based on the next room through the hole
   secondHole.graphics.beginFill(room[room[r][secondf]][4]).drawEllipse(secondhx, secondhy, secondhw, secondhh);
@@ -707,7 +724,13 @@ function animateMove () {
 
   //set the stroke style
   hole.graphics.setStrokeStyle(3);
-  hole.graphics.beginStroke('black');
+  //***white stroke in the navy room
+  if (r == 35) {
+    hole.graphics.beginStroke('white');
+  }
+  else {
+    hole.graphics.beginStroke('black');
+  }
 
   //draw a circle using the key values to expand it as the player moves forwards
   hole.graphics.beginFill(room[room[r][f]][4]).drawCircle(0, 0, grow);
@@ -764,6 +787,10 @@ function specialRooms () {
   }
   if (r == 26 && packageTwo != "seen") {
     honeydewRoom ();
+  }
+  if (r == 30 && packageFour != "seen") {
+    packageFour = "seen";
+    setTimeout(limeRoom, 10000);
   }
   if (r == 33 && roomsim != "seen") {
     lavenderRoom ();
@@ -979,6 +1006,7 @@ function end () {
   });
   location.href = '../downloads/package03.zip';
   end = true;
+  Gibber.clear();
 }
 
 function dialogBox (dialogTitle, dialogAlert, dialogButtonA, dialogButtonAResults, dialogButtonB, dialogButtonBResults) {
