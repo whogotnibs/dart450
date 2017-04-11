@@ -803,7 +803,8 @@ function specialRooms () {
 function navajoRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/note01.rtf';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/compass.rtf', '_blank');
+    // location.href = '../downloads/note01.rtf';
     note = 'seen';
   }
   var dialogButtonBResults = function() {
