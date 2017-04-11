@@ -1,0 +1,57 @@
+<!-- ************************************************************************
+
+ROOMS
+Thomas Bell
+
+************************************************************************ -->
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <title>ROOMS</title>
+
+  <link rel="icon" href="favicon.png">
+
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+  <!--  Including the responsive voice library-->
+  <!-- <script src='https://code.responsivevoice.org/responsivevoice.js'></script> -->
+
+  <!-- Including jQuery by default -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+  <!-- Including createjs because I use eisel to animate the game -->
+  <script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+
+  <!-- Including gibber because the soundtrack is made with gibber -->
+  <script src="js/gibber.lib.min.js"></script>
+
+  <!-- Uncomment next two lines to include jQuery UI -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <!-- Custom theme from themeroller -->
+  <link rel="stylesheet" href="js/jquery-ui.theme.css">
+
+  <!-- We include our own script file(s) -->
+  <script src="js/script.js" content="text/javascript"></script>
+
+</head>
+
+<body>
+
+<!-- <img class="compass" src="compass.jpg"> -->
+
+<h1></h1>
+<h2 class="instructions">[<] / [>]: spin 90deg<br/>[SPACE] or [^]: advance</h2>
+<canvas id="canvas" width="600" height="300"></canvas>
+<img src="compass.png" id="compass">
+<img src="lights.png" id="lights">
+
+</body>
+
+</html>

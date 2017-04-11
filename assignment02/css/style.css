@@ -1,0 +1,105 @@
+/*
+
+3d Maze
+Thomas Bell
+
+*/
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  height: 100%;
+}
+
+#compass {
+  height: 400px;
+  width: 400px;
+  position: fixed;
+  bottom: -290px;
+  left: 50%;
+  margin-left: -200px;
+  z-index: 0;
+  visibility: hidden;
+}
+
+#canvas {
+  position: fixed;
+  z-index: 1;
+  margin-top: -100px;
+}
+
+h1 {
+  color: white;
+  margin-left: -300px;
+  left: 50%;
+  width: 600px;
+  text-align: center;
+  font-weight: lighter;
+  letter-spacing: 10px;
+  position: fixed;
+}
+
+h2 {
+  color: black;
+  margin-left: -300px;
+  left: 50%;
+  width: 600px;
+  line-height: 30px;
+  text-align: center;
+  font-weight: lighter;
+  letter-spacing: 5px;
+  font-size: 15px;
+  position: fixed;
+  top: 50%;
+  margin-top: -150px;
+  height: 100px;
+  z-index: 2;
+  font-family: monospace;
+}
+
+.info {
+  position: fixed;
+  color: white;
+  bottom: 120px;;
+  height: 70px;
+  font-family: monospace;
+  line-height: 30px;
+  width: 220px;
+  margin-left: -115px;
+  left: 50%;
+  border: 2px solid white;
+  padding: 5px;
+  padding-bottom: 0;
+  text-align: center;
+}
+
+#lights {
+  height: 300px;
+  width: 900px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -450px;
+  z-index: 0;
+  visibility: hidden;
+}
+
+textarea {
+  resize: none;
+  height: 15px;
+  width: 350px;
+  margin: -7px 0px -7px 10px;
+  display: block;
+  background-color: black;
+  color: white;
+  border-color: red;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.comment {
+  color: grey
+}
