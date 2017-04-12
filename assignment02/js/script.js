@@ -803,8 +803,7 @@ function specialRooms () {
 function navajoRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/compass.rtf', '_blank');
-    // location.href = '../downloads/note01.rtf';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/note01.rtf', '_blank');
     note = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -816,7 +815,7 @@ function navajoRoom () {
 function khakiRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/compass.rtf';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/compass.rtf', '_blank');
     comp = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -828,7 +827,7 @@ function khakiRoom () {
 function peachpuffRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/colour_id_tool.rtf';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/colour_id_tool.rtf', '_blank');
     colouridtool = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -840,7 +839,7 @@ function peachpuffRoom () {
 function goldenrodRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/package01.zip';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/package01.zip', '_blank');
     packageOne = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -852,7 +851,7 @@ function goldenrodRoom () {
 function goldRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/lantern.rtf';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/lantern.rtf', '_blank');
     lantern = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -875,7 +874,7 @@ function pinkRoom () {
 function honeydewRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/package02.zip';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/package02.zip', '_blank');
     packageTwo = 'seen';
   }
   var dialogButtonBResults = function() {
@@ -887,7 +886,7 @@ function honeydewRoom () {
 function limeRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/package04.zip';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/package04.zip', '_blank');
   }
   var dialogButtonBResults = function() {
     $(this).dialog("close");
@@ -899,7 +898,7 @@ function limeRoom () {
 function lavenderRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
-    location.href = '../downloads/CONFIDENTIAL.zip';
+    window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/CONFIDENTIAL.zip', '_blank');
   }
   var dialogButtonBResults = function() {
     $(this).dialog("close");
@@ -1005,7 +1004,7 @@ function end () {
   $('#canvas').css({
     visibility: 'hidden',
   });
-  location.href = '../downloads/package03.zip';
+  window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/package03.zip', '_blank');
   end = true;
   Gibber.clear();
 }
