@@ -705,7 +705,7 @@ function forward () {
       setTimeout(stageThreeMusic,100);
       Gibber.clear();
     }
-    else if (r == 30 && pr == 29) {
+    else if (r == 30 && pr == 28) {
       setTimeout(limeMusic,100);
       Gibber.clear();
     }
@@ -899,10 +899,10 @@ function lavenderRoom () {
   var dialogButtonAResults = function() {
     $(this).dialog("close");
     window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/CONFIDENTIAL.zip', '_blank');
+    roomsim = 'seen';
   }
   var dialogButtonBResults = function() {
     $(this).dialog("close");
-    roomsim = "closed";
   }
   dialogBox('A FILE!', 'You found a <i>file</i>. Pick up the <i>file</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
 }
@@ -1081,7 +1081,6 @@ function stageOneMusic () {
 
   b = Synth({ maxVoices:4, waveform:'Saw', attack:ms(200), decay:ms(3000) })
   c = FM('bass',{decay:ms(200)})
-  d = Synth({ maxVoices:4, waveform:'Saw', attack:ms(10), decay:ms(3000) })
 
   score = Score([
   0, c.note.score( [],2 ),
@@ -1137,31 +1136,31 @@ function stageTwoMusic () {
     .amp = 3
 
   b = Synth({ maxVoices:4, waveform:'Triangle', attack:ms(600), decay:ms(3000) })
-  d = Synth({ maxVoices:4, waveform:'Saw', attack:ms(10), decay:ms(3000) })
+  q = Synth({ maxVoices:4, waveform:'Saw', attack:ms(10), decay:ms(3000) })
   c = FM('bass',{decay:ms(400)})
   score = Score([
     0, c.note.score( [],1 ),
     measures(2), function() {
       b.amp = 0.5
       c.amp = 2
-      d.amp = 0.1
+      q.amp = 0.1
       c.note.seq(['e2','d2','e2','e2','d2','e2','e1'], [1.5/14,1.5/14,11/14,1.5/14,1.5/14,1/14,10/14])
       b.chord.seq(['c3maj7', 'c#3min7','e3min7',],[4/7,3/7,1])
     },
     measures(4), function() {
-      d.fx.add( Tremolo({ amp: 1, frequency:1.4 }) )
+      q.fx.add( Tremolo({ amp: 1, frequency:1.4 }) )
       b.chord.seq.stop()
-      d.chord.seq([[],'e4min11'],[8/14,6/14])
+      q.chord.seq([[],'e4min11'],[8/14,6/14])
       c.note.seq(['e1','e#1','e1'], [3/14,3/14,8/14])
     },
     measures(4), function() {
-      d.chord.seq.stop()
+      q.chord.seq.stop()
       c.note.seq(['e2','d2','e2','e2','d2','e2','e1'], [1.5/14,1.5/14,11/14,1.5/14,1.5/14,1/14,10/14])
       b.chord.seq(['c3maj7', 'c#3min7','e3min7',],[4/7,3/7,1])
     },
     measures(8), function() {
       b.chord.seq.stop()
-      d.chord.seq([[],'e4min11'],[8/14,6/14])
+      q.chord.seq([[],'e4min11'],[8/14,6/14])
       c.note.seq(['e1','e#1','e1'], [3/14,3/14,8/14])
     },
   ]).start()
@@ -1171,10 +1170,12 @@ function stageThreeMusic () {
   Clock.rate = 0.6
   a = EDrums('x..x..x..*x*ox**')
     .fx.add( Reverb({ roomSize: 0.9 }) )
-    .snare.snappy = 1
-    .amp = 3
+    .snare.snappy = 0.3
+    .amp = 5
 
   b = FM('bass',{decay:ms(500)})
+    b.amp = 0.6
+
   c = Synth({ maxVoices:4, waveform:'Sine', attack:ms(10), decay:ms(1000) })
 
   score = Score([
@@ -1186,7 +1187,6 @@ function stageThreeMusic () {
     measures(2), function() {
       c.chord.seq( ['c4min7', 'c#4min7','d4min7',],[3/16,3/16,3/16,2/16,2/16,3/16] ),
       b.note.seq.stop()
-      b.amp = 0.6
       b.note.seq( ['d2','c2','d2','d1'], [1/16,1/16,11/16,3/16] )
     },
     measures(2), function() {
@@ -1215,22 +1215,21 @@ function stageThreeMusic () {
 }
 
 function limeMusic () {
-  Clock.rate = 0.6
+  Clock.rate = 0.55
 
   b = FM('bass',{decay:ms(500)})
   b.amp = 0.6
   c = Synth({ maxVoices:6, waveform:'Sine', attack:ms(100), decay:ms(1500) })
-  d = FM('bass',{attack:ms(100),decay:ms(500)})
-  d.fx.add( Reverb({ roomSize: 0.95 }))
-
+  q = FM('bass',{attack:ms(100),decay:ms(500)})
+  q.fx.add( Reverb({ roomSize: 0.95 }))
 
   score = Score([
 
     0, c.chord.score( ['c5maj6','c5min6','c5min6','f4maj9','f4min9'],[3/11,1/11,1/11,3/11,3/11] ),
-    // measures(2), function() {
-    //   b.note.seq(['c2','c2','f1','f1','f1','f1'],  [1.5/11,3.5/11,1.5/11,1.5/11,1.5/11,1.5/11] )
-    //   c.chord.seq( ['c4maj6','c4min6','c4min6','f3maj9','f3min9'],[3/11,1/11,1/11,3/11,3/11] )
-    // },
+    measures(2), function() {
+      b.note.seq(['c2','c2','f1','f1','f1','f1'],  [1.5/11,3.5/11,1.5/11,1.5/11,1.5/11,1.5/11] )
+      c.chord.seq( ['c4maj6','c4min6','c4min6','f3maj9','f3min9'],[3/11,1/11,1/11,3/11,3/11] )
+    },
     measures(2), function() {
       a = EDrums('x........x**x**x........o........')
       a.kick.decay = 0.3
@@ -1238,9 +1237,8 @@ function limeMusic () {
       // a.fx.add( Reverb({ roomSize: 0.6 }) )
       b.note.seq(['c2','c2'],  [1.5/11,9.5/11] )
       c.chord.seq( ['c4maj6','d#3maj9','c3maj6','d#3maj9'],[9.5/11,1.5/11] )
-      d.chord.seq(['c5maj6','c5maj6','c5maj6','c4maj6','c4maj6','c4maj6'],[0.75/11,0.75/11,9.5/11,0.75/11,0.75/11,9.5/11])
+      q.chord.seq(['c5maj6','c5maj6','c5maj6','c4maj6','c4maj6','c4maj6'],[0.75/11,0.75/11,9.5/11,0.75/11,0.75/11,9.5/11])
     },
-
 
   ]).start()
 }
