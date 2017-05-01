@@ -1,15 +1,13 @@
 /*
 
 ROOMS
-Thomas Bell
-
-Spin around with the arrow keys(for now)
+A Navigable 3D Maze by Thomas Bell
 
 */
 
-//organizing the rooms
+//organizing the room specs in to arrays
 var room = [
-  //[room connected to north wall, "..."east, "..."south, "..."west, room colour]
+  //[room through the north wall?, "..."east?, "..."south?, "..."west?, room colour]
   /*0*/[null, null, 1, null, 'red'],
   /*1*/[0, 3, null, 2, 'navajowhite'],
   /*2*/[null, 1, null, null, 'powderblue'],
@@ -98,10 +96,9 @@ var windowHeight;
 var canvasWidth;
 var canvasHeight;
 
-var solved;
-
-//a place to store the eiseljs drawing stage and lines for animating...
+//a place to store the eiseljs drawing stage...
 var stage;
+//and lines for animating...
 var lineA;
 var lineB;
 var lineC;
@@ -110,8 +107,7 @@ var lineE;
 var lineF;
 var lineG;
 var lineH;
-
-//and the keypoints used to draw them
+//and the keypoints used to draw those lines
 var ax;
 var ay;
 var bx;
@@ -145,30 +141,39 @@ var packageOne;
 var lantern;
 var packageTwo;
 var roomsim;
-var navy;
 var packageThree;
 var packageFour;
 
+//start with none of the items activated
 var lanternActivated = false;
 var colourIDActivated = false;
 var compassActivated = false;
 
+//(for the navy room puzzle)
+var navy;
+var solved = false;
+
 //so we can prevent things from running once the game is over
 var end;
 
-var cheat;
+
+
 
 $(document).ready(function() {
 
 Gibber.init();
 
 if (end != true) {
+  //animate the game
   animate ();
 
+  //player spinning in a room
   spin ();
 
+  //player movement from room to room
   move ();
 
+  //update the colour id tool
   setInterval(colourID, ANI_INT);
 
   specialRooms ();
@@ -231,7 +236,8 @@ function rotate () {
 
   //stop spinning when the counter reaches 90 (N, E, S, or W)
   if (n >= 90 / SPIN_DEG) {
-    //check to see if player is in the navy or lime rooms
+
+    //if the player is in the navy or lime room run the appropriate function for that room
     if (r == 35 && navy != "seen") {
       navy = "seen";
       setTimeout(navyRoom, 10000);
@@ -605,25 +611,25 @@ function animateHoleIn () {
 //that the player can see during a spin (or while still)
 function checkFacing () {
 
-  //N>E (c)
+  //N>E (clokwise)
   if (d == 0 && orientation > 0 && orientation < 90){
     f = 0;
     secondf = 1;
   }
 
-  //E>S (c)
+  //E>S (clockwise)
   else if (d == 0 && orientation > 90 && orientation < 180){
     f = 1;
     secondf = 2;
   }
 
-  //S>W (c)
+  //S>W (clockwise)
   else if (d == 0 && orientation > 180 && orientation < 270){
     f = 2;
     secondf = 3;
   }
 
-  //W>N (c)
+  //W>N (clockwises)
   else if (d == 0 && orientation > 270){
     f = 3;
     secondf = 0;
@@ -667,7 +673,6 @@ function move () {
   });
 }
 
-//
 function forward () {
   //advance the counter
   m = m + 1;
@@ -692,7 +697,7 @@ function forward () {
       }, 1000);
     }
 
-    //play the appropriate music for the room
+    //play the appropriate music for the stage
     if ((r == 1 && pr == 0 && note != 'seen')||(r == 13 && pr == 14)) {
       setTimeout(stageOneMusic,100);
       Gibber.clear();
@@ -714,7 +719,6 @@ function forward () {
 }
 
 function animateMove () {
-  var grow = (HOLE_SIZE/2)+canvasWidth/2*(m/100);
 
   //hide the lines in the room to simplify the moving animation
   stage.removeAllChildren();
@@ -732,7 +736,8 @@ function animateMove () {
     hole.graphics.beginStroke('black');
   }
 
-  //draw a circle using the key values to expand it as the player moves forwards
+  //draw a circle and expand it to take up the screen as the player moves forwards
+  var grow = (HOLE_SIZE/2)+canvasWidth/2*(m/100);
   hole.graphics.beginFill(room[room[r][f]][4]).drawCircle(0, 0, grow);
   hole.x = canvasWidth/2;
   hole.y = canvasHeight/2;
@@ -744,7 +749,7 @@ function animateMove () {
   stage.update();
 }
 
-//the colour id tool
+//the colour id tool shows the player what colour room they're in as well as facing
 function colourID () {
   if (colourIDActivated == true) {
 
@@ -765,7 +770,7 @@ function colourID () {
   }
 }
 
-
+//display the appropriate dialog box for rooms with items/special events
 function specialRooms () {
   if (r == 1 && note != "seen") {
     navajoRoom ();
@@ -799,6 +804,7 @@ function specialRooms () {
     end ();
   }
 }
+
 
 function navajoRoom () {
   var dialogButtonAResults = function() {
@@ -867,6 +873,7 @@ function darkRoom () {
   dialogBox('DARKNESS!', 'This part of the map is too dark to explore without a lantern', 'OK', dialogButtonAResults)
 }
 
+//sets the room colour to pink (no dialog box)
 function pinkRoom () {
   room[23] = [25, 22, 24, null, 'pink'];
 }
@@ -907,6 +914,7 @@ function lavenderRoom () {
   dialogBox('A FILE!', 'You found a <i>file</i>. Pick up the <i>file</i>?', 'Pick It Up', dialogButtonAResults, 'Leave It', dialogButtonBResults);
 }
 
+//the navy room has a unique dialog boxthat doesnt follow the template
 function navyRoom () {
 
   var navyDialog = $('<div id="dialogBox" title="FIX ROOM"><p></div>');
@@ -980,6 +988,8 @@ function navyRoom () {
     buttons: {
       "Fix": function () {
         $(this).dialog("close");
+
+        //check if the text areas have the correct input
         if (textAreaOne.val() == 'by = canvasHeight-(canvasHeight*(1-SCALE)*(1-(n/45)));'
         && textAreaTwo.val() == 'cy = canvasHeight*(1-SCALE)*(1-(n/45));') {
           solved = true;
@@ -997,18 +1007,27 @@ function navyRoom () {
   $('.ui-dialog :button').blur();
 }
 
+//a function for when the player has left the navy room
 function end () {
+  //the page goes white
   $('body').css({
     backgroundColor: 'white',
   });
   $('#canvas').css({
     visibility: 'hidden',
   });
+
+  //the final package downloads
   window.open('https://whogotnibs.github.io/dart450/assignment02/downloads/package03.zip', '_blank');
+
+  //the game functions stop running
   end = true;
+
+  //the music stops
   Gibber.clear();
 }
 
+//dialog box template
 function dialogBox (dialogTitle, dialogAlert, dialogButtonA, dialogButtonAResults, dialogButtonB, dialogButtonBResults) {
   var dialog = $('<div id="dialogBox" title="'+ dialogTitle +'"><p><span class="ui-icon ui-icon-alert" style="float: left; margin:12px 12px 20px 0;"></span>'+ dialogAlert +'<p></div>')
   var dialogx = canvasWidth/2;
@@ -1061,16 +1080,10 @@ function codes () {
       compass ();
     }
 
-    //activate compass
-    if (codeString.indexOf("room") != -1  && cheat != true) {
-      r = 34;
-      pr = 33;
-      cheat = true;
-    }
   });
 }
 
-//all of this remaining code is composed and written by Adrian Hu
+//all of the remaining code is written by Adrian Hu
 function stageOneMusic () {
   Clock.rate = 0.6
 
